@@ -8,73 +8,43 @@
 		<script id="shader-vs" type="x-shader/x-vertex">
 			attribute vec3 aVertexPosition;
 			attribute vec2 aBezierCoord;
+			attribute float aCurve;
 
 			uniform mat4 uMVMatrix;
 			uniform mat4 uPMatrix;
 
 			varying vec2 vBezierCoord;
+			varying float vCurve;
 
 			void main(void) {
 				gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 				vBezierCoord = aBezierCoord;
-			}
-		</script>
+				vCurve = aCurve;
 
-		<script id="shader-fs-aa" type="x-shader/x-fragment">
-			#extension GL_OES_standard_derivatives : enable
-
-			#ifdef GL_ES
-			precision highp float;
-			#endif
-
-			varying vec2 vBezierCoord;
-
-			void main(void) {
-				vec2 px = dFdx(vBezierCoord);
-				vec2 py = dFdy(vBezierCoord);
-				float fx = 2.0 * vBezierCoord.x * px.x - px.y;
-				float fy = 2.0 * vBezierCoord.y * py.x - py.y;
-				float sd = (vBezierCoord.x * vBezierCoord.x - vBezierCoord.y) / sqrt(fx * fx + fy * fy);
-				gl_FragColor = vec4(0.0, 0.0, 1.0, clamp(0.5 - sd, 0.5, 1.0));
-			}
-		</script>
-		
-		<script id="shader-fs-full" type="x-shader/x-fragment">
-			#extension GL_OES_standard_derivatives : enable
-
-			#ifdef GL_ES
-			precision highp float;
-			#endif
-
-			varying vec2 vBezierCoord;
-
-			void main(void) {
-				vec2 px = dFdx(vBezierCoord);
-				vec2 py = dFdy(vBezierCoord);
-				float fx = 2.0 * vBezierCoord.x * px.x - px.y;
-				float fy = 2.0 * vBezierCoord.y * py.x - py.y;
-				float sd = (vBezierCoord.x * vBezierCoord.x - vBezierCoord.y) / sqrt(fx * fx + fy * fy);
-				gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0); 
-				//gl_FragColor = vec4(0.0, 1.0, 1.0, clamp(0.5 - sd, 0.0, 1.0));
 			}
 		</script>
 
 		<script id="shader-fs" type="x-shader/x-fragment">
+			#extension GL_OES_standard_derivatives : enable
+
 			#ifdef GL_ES
 			precision highp float;
 			#endif
 
 			varying vec2 vBezierCoord;
+			varying float vCurve;
 
 			void main(void) {
-				float d = (vBezierCoord.s * vBezierCoord.s) - vBezierCoord.t;
-				if(d < 0.0) {
-					gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-				} else {
-					discard;
-				}
+				vec2 px = dFdx(vBezierCoord);
+				vec2 py = dFdy(vBezierCoord);
+				float fx = 2.0 * vBezierCoord.x * px.x - px.y;
+				float fy = 2.0 * vBezierCoord.y * py.x - py.y;
+				float sd = vCurve * (vBezierCoord.x * vBezierCoord.x - vBezierCoord.y) / sqrt(fx * fx + fy * fy);
+				float alpha = clamp(0.5 - sd, 0.5, 1.0);
+				gl_FragColor = vec4(0.0, 0.0, 1.0, alpha);
 			}
 		</script>
+		
 
 		<script>
 
@@ -136,7 +106,7 @@
 						gl.getExtension(derivatesExt); 
 				}
 
-				var fragmentShader = getShader(gl, derivatesSupported ? "shader-fs-aa" : "shader-fs");
+				var fragmentShader = getShader(gl, "shader-fs");
 				var vertexShader = getShader(gl, "shader-vs");
 
 				shaderProgram = gl.createProgram();
@@ -156,6 +126,10 @@
 				shaderProgram.bezierCoordAttribute = gl.getAttribLocation(shaderProgram, "aBezierCoord");
 				gl.enableVertexAttribArray(shaderProgram.bezierCoordAttribute);
 
+				shaderProgram.curveAttribute = gl.getAttribLocation(
+					shaderProgram, "aCurve");
+				gl.enableVertexAttribArray(shaderProgram.curveAttribute);
+
 				shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
 				shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 			}
@@ -170,29 +144,59 @@
 
 			var triangleVertexPositionBuffer;
 			var bezierCoordBuffer;
+			var curveBuffer;
 
 			function initBuffers() {
 				squareVertexPositionBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
 				vertices = [
-					-1.0, -1.0,  0.0,
+					-1.0,  0.0,  0.0,
 					 0.0,  1.0,  0.0,
-					 1.0, -1.0,  0.0
+					 1.0,  0.0,  0.0,
+					 0.0,  1.0,  0.0,
+					-1.0,  1.2,  0.0,
+					-1.0,  0.0,  0.0,
+					 1.0,  0.0,  0.0,
+					 1.0,  0.8,  0.0,
+					 0.0,  1.0,  0.0
 				];
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 				squareVertexPositionBuffer.itemSize = 3;
-				squareVertexPositionBuffer.numItems = 3;
+				squareVertexPositionBuffer.numItems = 9;
 
 				bezierCoordBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, bezierCoordBuffer);
 				var bezierCoords = [
 					1.0,  1.0,
 					0.5,  0.0,
-					0.0,  0.0
+					0.0,  0.0,
+					1.0,  1.0,
+					0.5,  0.0,
+					0.0,  0.0,
+					0.0,  1.0, // [(0, 1), (0, 1), (0, 1)] -> filled triangle
+					0.0,  1.0,
+					0.0,  1.0
 				];
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bezierCoords), gl.STATIC_DRAW);
 				bezierCoordBuffer.itemSize = 2;
-				bezierCoordBuffer.numItems = 3;
+				bezierCoordBuffer.numItems = 9;
+
+				curveBuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, curveBuffer);
+				var curves = [
+					-1.0,
+					-1.0,
+					-1.0,
+					 1.0,
+					 1.0,
+					 1.0,
+					 1.0,
+					 1.0,
+					 1.0
+				];
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(curves), gl.STATIC_DRAW);
+				curveBuffer.itemSize = 1;
+				curveBuffer.numItems = 9;				
 			}
 
 			function drawScene() {
@@ -208,6 +212,9 @@
 
 				gl.bindBuffer(gl.ARRAY_BUFFER, bezierCoordBuffer);
 				gl.vertexAttribPointer(shaderProgram.bezierCoordAttribute, bezierCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+				gl.bindBuffer(gl.ARRAY_BUFFER, curveBuffer);
+				gl.vertexAttribPointer(shaderProgram.curveAttribute, curveBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 				setMatrixUniforms();
 				gl.drawArrays(gl.TRIANGLES, 0, squareVertexPositionBuffer.numItems);
