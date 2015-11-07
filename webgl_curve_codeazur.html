@@ -9,18 +9,20 @@
 			attribute vec3 aVertexPosition;
 			attribute vec2 aBezierCoord;
 			attribute float aCurve;
+			attribute vec4 aColor;
 
 			uniform mat4 uMVMatrix;
 			uniform mat4 uPMatrix;
 
 			varying vec2 vBezierCoord;
 			varying float vCurve;
+			varying vec4 vColor;
 
 			void main(void) {
 				gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 				vBezierCoord = aBezierCoord;
 				vCurve = aCurve;
-
+				vColor = aColor;
 			}
 		</script>
 
@@ -33,6 +35,7 @@
 
 			varying vec2 vBezierCoord;
 			varying float vCurve;
+			varying vec4 vColor;
 
 			void main(void) {
 				vec2 px = dFdx(vBezierCoord);
@@ -40,8 +43,8 @@
 				float fx = 2.0 * vBezierCoord.x * px.x - px.y;
 				float fy = 2.0 * vBezierCoord.y * py.x - py.y;
 				float sd = vCurve * (vBezierCoord.x * vBezierCoord.x - vBezierCoord.y) / sqrt(fx * fx + fy * fy);
-				float alpha = clamp(0.5 - sd, 0.5, 1.0);
-				gl_FragColor = vec4(0.0, 0.0, 1.0, alpha);
+				float alpha = clamp((0.5 - sd) * vColor.w, 0.0, 1.0);
+				gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, alpha);
 			}
 		</script>
 		
@@ -130,6 +133,9 @@
 					shaderProgram, "aCurve");
 				gl.enableVertexAttribArray(shaderProgram.curveAttribute);
 
+				shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
+				gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+
 				shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
 				shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 			}
@@ -145,20 +151,21 @@
 			var triangleVertexPositionBuffer;
 			var bezierCoordBuffer;
 			var curveBuffer;
+			var colorBuffer;
 
 			function initBuffers() {
 				squareVertexPositionBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
 				vertices = [
-					-1.0,  0.0,  0.0,
-					 0.0,  1.0,  0.0,
-					 1.0,  0.0,  0.0,
-					 0.0,  1.0,  0.0,
-					-1.0,  1.2,  0.0,
-					-1.0,  0.0,  0.0,
-					 1.0,  0.0,  0.0,
-					 1.0,  0.8,  0.0,
-					 0.0,  1.0,  0.0
+					-1.0,  0.0,  0.0,  // a
+					 0.0,  1.0,  0.0,  // b
+					 1.0,  0.0,  0.0,  // c
+					 0.0,  1.0,  0.0,  // b
+					-1.0,  1.2,  0.0,  // d
+					-1.0,  0.0,  0.0,  // a
+					 1.0,  0.0,  0.0,  // c
+					 1.0,  0.8,  0.0,  // e
+					 0.0,  1.0,  0.0   // b
 				];
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 				squareVertexPositionBuffer.itemSize = 3;
@@ -167,15 +174,18 @@
 				bezierCoordBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, bezierCoordBuffer);
 				var bezierCoords = [
-					1.0,  1.0,
-					0.5,  0.0,
-					0.0,  0.0,
-					1.0,  1.0,
-					0.5,  0.0,
-					0.0,  0.0,
-					0.0,  1.0, // [(0, 1), (0, 1), (0, 1)] -> filled triangle
-					0.0,  1.0,
-					0.0,  1.0
+					1.0,  1.0,  // a
+					0.5,  0.0,  // b
+					0.0,  0.0,  // c
+
+					1.0,  1.0,  // b
+					0.5,  0.0,  // d
+					0.0,  0.0,  // a
+
+					// [(0, 1), (0, 1), (0, 1)] -> filled triangle
+					0.0,  1.0,  // c
+					0.0,  1.0,  // e
+					0.0,  1.0   // b
 				];
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bezierCoords), gl.STATIC_DRAW);
 				bezierCoordBuffer.itemSize = 2;
@@ -197,6 +207,26 @@
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(curves), gl.STATIC_DRAW);
 				curveBuffer.itemSize = 1;
 				curveBuffer.numItems = 9;				
+
+				colorBuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+				var color = [
+					1.0,  0.0, 0.0,  1.0,  // a
+					1.0,  0.0, 1.0,  1.0,  // b
+					0.0,  0.0, 1.0,  1.0,  // c
+
+					1.0,  0.0, 1.0,  1.0,  // b
+					0.0,  1.0, 1.0,  1.0,  // d
+					1.0,  0.0, 0.0,  1.0,  // a
+
+					0.0,  0.0, 1.0,  1.0,  // c
+					1.0,  1.0, 0.0,  1.0,  // e
+					1.0,  0.0, 1.0,  1.0   // b
+				];
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
+				colorBuffer.itemSize = 4;
+				colorBuffer.numItems = 9;
+
 			}
 
 			function drawScene() {
@@ -215,6 +245,9 @@
 
 				gl.bindBuffer(gl.ARRAY_BUFFER, curveBuffer);
 				gl.vertexAttribPointer(shaderProgram.curveAttribute, curveBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+				gl.vertexAttribPointer(shaderProgram.colorAttribute, colorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 				setMatrixUniforms();
 				gl.drawArrays(gl.TRIANGLES, 0, squareVertexPositionBuffer.numItems);
