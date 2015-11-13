@@ -6,46 +6,85 @@
 		<script src="glMatrix-0.9.6.min.js"></script>
 
 		<script id="shader-vs" type="x-shader/x-vertex">
-			attribute vec3 aVertexPosition;
-			attribute vec2 aBezierCoord;
-			attribute float aCurve;
-			attribute vec4 aColor;
+		    attribute vec3 a_vertex;
+		    attribute vec2 a_bezier;
+		    attribute float a_curve;
+		    attribute vec4 a_color;
 
-			uniform mat4 uMVMatrix;
-			uniform mat4 uPMatrix;
+		    uniform mat4 uMVMatrix;
+		    uniform mat4 uPMatrix;
 
-			varying vec2 vBezierCoord;
-			varying float vCurve;
-			varying vec4 vColor;
+		    varying vec2 v_bezier;
+		    varying float v_curve;
+		    varying vec4 v_color;
 
-			void main(void) {
-				gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-				vBezierCoord = aBezierCoord;
-				vCurve = aCurve;
-				vColor = aColor;
-			}
+		    void main(void) {
+		        gl_Position = uPMatrix * uMVMatrix * vec4(a_vertex, 1.0);
+		        v_bezier = a_bezier;
+		        v_curve = a_curve;
+		        v_color = a_color;
+		    }
+
+			// attribute vec3 aVertexPosition;
+			// attribute vec2 aBezierCoord;
+			// attribute float aCurve;
+			// attribute vec4 aColor;
+
+			// uniform mat4 uMVMatrix;
+			// uniform mat4 uPMatrix;
+
+			// varying vec2 vBezierCoord;
+			// varying float vCurve;
+			// varying vec4 vColor;
+
+			// void main(void) {
+			// 	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			// 	vBezierCoord = aBezierCoord;
+			// 	vCurve = aCurve;
+			// 	vColor = aColor;
+			// }
 		</script>
 
 		<script id="shader-fs" type="x-shader/x-fragment">
-			#extension GL_OES_standard_derivatives : enable
+		    #extension GL_OES_standard_derivatives : enable
 
-			#ifdef GL_ES
-			precision highp float;
-			#endif
+		    #ifdef GL_ES
+		    precision highp float;
+		    #endif
 
-			varying vec2 vBezierCoord;
-			varying float vCurve;
-			varying vec4 vColor;
+		    varying vec2 v_bezier;
+		    varying float v_curve;
+		    varying vec4 v_color;
 
-			void main(void) {
-				vec2 px = dFdx(vBezierCoord);
-				vec2 py = dFdy(vBezierCoord);
-				float fx = 2.0 * vBezierCoord.x * px.x - px.y;
-				float fy = 2.0 * vBezierCoord.y * py.x - py.y;
-				float sd = vCurve * (vBezierCoord.x * vBezierCoord.x - vBezierCoord.y) / sqrt(fx * fx + fy * fy);
-				float alpha = clamp((0.5 - sd) * vColor.w, 0.0, 1.0);
-				gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, alpha);
-			}
+		    void main(void) {
+		        vec2 px = dFdx(v_bezier);
+		        vec2 py = dFdy(v_bezier);
+		        float fx = 2.0 * v_bezier.x * px.x - px.y;
+		        float fy = 2.0 * v_bezier.y * py.x - py.y;
+		        float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);
+		        float alpha = clamp((0.5 - sd) * v_color.w, 0.0, 1.0);
+		        gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);
+		    }
+
+			// #extension GL_OES_standard_derivatives : enable
+
+			// #ifdef GL_ES
+			// precision highp float;
+			// #endif
+
+			// varying vec2 vBezierCoord;
+			// varying float vCurve;
+			// varying vec4 vColor;
+
+			// void main(void) {
+			// 	vec2 px = dFdx(vBezierCoord);
+			// 	vec2 py = dFdy(vBezierCoord);
+			// 	float fx = 2.0 * vBezierCoord.x * px.x - px.y;
+			// 	float fy = 2.0 * vBezierCoord.y * py.x - py.y;
+			// 	float sd = vCurve * (vBezierCoord.x * vBezierCoord.x - vBezierCoord.y) / sqrt(fx * fx + fy * fy);
+			// 	float alpha = clamp((0.5 - sd) * vColor.w, 0.0, 1.0);
+			// 	gl_FragColor = vec4(vColor.x, vColor.y, vColor.z, alpha);
+			// }
 		</script>
 		
 
@@ -123,17 +162,17 @@
 
 				gl.useProgram(shaderProgram);
 
-				shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+				shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "a_vertex");
 				gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-				shaderProgram.bezierCoordAttribute = gl.getAttribLocation(shaderProgram, "aBezierCoord");
+				shaderProgram.bezierCoordAttribute = gl.getAttribLocation(shaderProgram, "a_bezier");
 				gl.enableVertexAttribArray(shaderProgram.bezierCoordAttribute);
 
 				shaderProgram.curveAttribute = gl.getAttribLocation(
-					shaderProgram, "aCurve");
+					shaderProgram, "a_curve");
 				gl.enableVertexAttribArray(shaderProgram.curveAttribute);
 
-				shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
+				shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "a_color");
 				gl.enableVertexAttribArray(shaderProgram.colorAttribute);
 
 				shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
@@ -237,6 +276,9 @@
 				mat4.identity(mvMatrix);
 				mat4.translate(mvMatrix, [0.0, 0.0, -4.0]);
 
+				gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+				gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+
 				gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
 				gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
@@ -249,7 +291,6 @@
 				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 				gl.vertexAttribPointer(shaderProgram.colorAttribute, colorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-				setMatrixUniforms();
 				gl.drawArrays(gl.TRIANGLES, 0, squareVertexPositionBuffer.numItems);
 			}
 
