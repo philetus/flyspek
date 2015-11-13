@@ -13,15 +13,17 @@ const vertexShaderSource = `
     attribute float a_curve;
     attribute vec4 a_color;
 
-    uniform mat4 uMVMatrix;
-    uniform mat4 uPMatrix;
+    uniform vec2 u_resolution;
 
     varying vec2 v_bezier;
     varying float v_curve;
     varying vec4 v_color;
 
-    void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(a_vertex, 0.0, 1.0);
+    void main(void) {       
+        vec2 clipspace = a_vertex / u_resolution; // pixels to 0.0 to 1.0
+        clipspace = clipspace * 2.0; // convert from 0->1 to 0->2
+        clipspace = clipspace - 1.0; // convert from 0->2 to -1->+1 
+        gl_Position = vec4(clipspace * vec2(1, -1), 0.0, 1.0);
         v_bezier = a_bezier;
         v_curve = a_curve;
         v_color = a_color;
@@ -60,7 +62,7 @@ type paan struct { // paan type hidden, call paan.New() to create paan
     width, height int
 
     shader *js.Object  // gl.shader
-    uMVMatrix, uPMatrix *js.Object // uniform shader variables
+    uResolution *js.Object // uniform shader variables
     aVertex, aBezier, aCurve, aColor int // varying shader variables
 
     meshdeks map[mesh2.Number]*glbuff
@@ -134,8 +136,7 @@ func (self *paan) initShaders() {
     self.aColor = self.gl.GetAttribLocation(self.shader, "a_color")
     self.gl.EnableVertexAttribArray(self.aColor)
 
-    self.uMVMatrix = self.gl.GetUniformLocation(self.shader, "uMVMatrix")
-    self.uPMatrix = self.gl.GetUniformLocation(self.shader, "uPMatrix")
+    self.uResolution = self.gl.GetUniformLocation(self.shader, "u_resolution")
 }
 
 func (self *paan) Log(msg string) {
@@ -164,8 +165,8 @@ func (self *paan) SetResolution() {
         self.canvas.Set("height", self.height)
     }
     self.gl.Viewport(0, 0, self.width, self.height);
-    // self.gl.Uniform2f(
-    //     self.uResolution, float32(self.width), float32(self.height))
+    self.gl.Uniform2f(
+        self.uResolution, float32(self.width), float32(self.height))
 }
 
 func (self *paan) Draw() {
@@ -174,14 +175,14 @@ func (self *paan) Draw() {
     self.gl.Clear(self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT)
 
     // set up uniform matrices
-    pMatrix := mgl32.Perspective(
-        mgl32.DegToRad(45.0), 
-        float32(self.width)/float32(self.height),
-        0.1, 100.0)
-    self.gl.UniformMatrix4fv(self.uPMatrix, false, floatifyMat4(pMatrix));
+    // pMatrix := mgl32.Perspective(
+    //     mgl32.DegToRad(45.0), 
+    //     float32(self.width)/float32(self.height),
+    //     0.1, 100.0)
+    // self.gl.UniformMatrix4fv(self.uPMatrix, false, floatifyMat4(pMatrix));
 
-    mvMatrix := mgl32.Translate3D(0.0, 0.0, -4.0)
-    self.gl.UniformMatrix4fv(self.uMVMatrix, false, floatifyMat4(mvMatrix));
+    // mvMatrix := mgl32.Translate3D(0.0, 0.0, -4.0)
+    // self.gl.UniformMatrix4fv(self.uMVMatrix, false, floatifyMat4(mvMatrix));
 
     for _, bff := range self.meshdeks {
         self.drawBuff(bff)
