@@ -1,7 +1,7 @@
 package paan
 
 import (
-    "fmt"
+    //"fmt"
     "github.com/gopherjs/gopherjs/js"
     //"github.com/go-gl/mathgl/mgl32" // vector & matrix lib
     "github.com/philetus/flyspek/mesh2"
@@ -84,16 +84,16 @@ func (self *paan) BuffMesh(msh mesh2.Mesh) {
     }
 
     // buffer data to gl
-    self.Log(fmt.Sprintf("vertices %v", vrts))
+    //self.Log(fmt.Sprintf("vertices %v", vrts))
     self.gl.BindBuffer(self.gl.ARRAY_BUFFER, bff.vrts)
     self.gl.BufferData(self.gl.ARRAY_BUFFER, vrts, self.gl.STATIC_DRAW)
-    self.Log(fmt.Sprintf("textures %v", txtrs))
+    //self.Log(fmt.Sprintf("textures %v", txtrs))
     self.gl.BindBuffer(self.gl.ARRAY_BUFFER, bff.txtrs)
     self.gl.BufferData(self.gl.ARRAY_BUFFER, txtrs, self.gl.STATIC_DRAW)
-    self.Log(fmt.Sprintf("curves %v", crvs))
+    //self.Log(fmt.Sprintf("curves %v", crvs))
     self.gl.BindBuffer(self.gl.ARRAY_BUFFER, bff.crvs)
     self.gl.BufferData(self.gl.ARRAY_BUFFER, crvs, self.gl.STATIC_DRAW)
-    self.Log(fmt.Sprintf("colors %v", clrs))
+    //self.Log(fmt.Sprintf("colors %v", clrs))
     self.gl.BindBuffer(self.gl.ARRAY_BUFFER, bff.clrs)
     self.gl.BufferData(self.gl.ARRAY_BUFFER, clrs, self.gl.STATIC_DRAW)
 

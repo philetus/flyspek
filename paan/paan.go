@@ -1,6 +1,7 @@
 package paan
 
 import (
+    "fmt"
     "github.com/gopherjs/gopherjs/js"
     "github.com/gopherjs/webgl"
     "github.com/go-gl/mathgl/mgl32" // vector & matrix lib
@@ -13,17 +14,15 @@ const vertexShaderSource = `
     attribute float a_curve;
     attribute vec4 a_color;
 
-    uniform vec2 u_resolution;
+    uniform mat3 u_transform; // local coordinate transform
 
     varying vec2 v_bezier;
     varying float v_curve;
     varying vec4 v_color;
 
     void main(void) {       
-        vec2 clipspace = a_vertex / u_resolution; // pixels to 0.0 to 1.0
-        clipspace = clipspace * 2.0; // convert from 0->1 to 0->2
-        clipspace = clipspace - 1.0; // convert from 0->2 to -1->+1 
-        gl_Position = vec4(clipspace * vec2(1, -1), 0.0, 1.0);
+        vec3 transformed = u_transform * vec3(a_vertex, 1.0);
+        gl_Position = vec4(transformed * vec3(1.0, -1.0, 0.0), 1.0);
         v_bezier = a_bezier;
         v_curve = a_curve;
         v_color = a_color;
@@ -51,8 +50,6 @@ const fragShaderSource = `
     }
 `
 
-//type PointerHandler func(pnt mgl32.Vec2)
-
 type paan struct { // paan type hidden, call paan.New() to create paan
     console *js.Object // browser console to log to
 
@@ -60,9 +57,11 @@ type paan struct { // paan type hidden, call paan.New() to create paan
     canvas *js.Object
     gl *webgl.Context
     width, height int
+    zoom, pan []float32
+    transform mgl32.Mat3
 
     shader *js.Object  // gl.shader
-    uResolution *js.Object // uniform shader variables
+    uTransform *js.Object // uniform shader variables
     aVertex, aBezier, aCurve, aColor int // varying shader variables
 
     meshdeks map[mesh2.Number]*glbuff
@@ -71,6 +70,8 @@ type paan struct { // paan type hidden, call paan.New() to create paan
 func New() *paan {
     self := new(paan) // allocate new paan struct
     self.meshdeks = make(map[mesh2.Number]*glbuff) // allocate mesh buffer map
+    self.zoom = []float32{1.0, 1.0} // zoom defaults to 1.0
+    self.pan = []float32{0.0, 0.0}
 
     // connect console
     self.console = js.Global.Get("console")
@@ -99,10 +100,6 @@ func New() *paan {
         self.gl.SRC_ALPHA, self.gl.ONE_MINUS_SRC_ALPHA, 
         self.gl.ZERO, self.gl.ONE)
     self.gl.Enable(self.gl.BLEND)
-
-
-    // init canvas resolution
-    //self.setResolution()
 
     return self
 }
@@ -136,11 +133,19 @@ func (self *paan) initShaders() {
     self.aColor = self.gl.GetAttribLocation(self.shader, "a_color")
     self.gl.EnableVertexAttribArray(self.aColor)
 
-    self.uResolution = self.gl.GetUniformLocation(self.shader, "u_resolution")
+    self.uTransform = self.gl.GetUniformLocation(self.shader, "u_transform")
 }
 
 func (self *paan) Log(msg string) {
     self.console.Call("log", msg)
+}
+
+func (self *paan) SetZoom(x, y float32) {
+    self.zoom = []float32{float32(x), float32(y)}
+}
+
+func (self *paan) SetPan(x, y float32) {
+    self.pan = []float32{float32(x), float32(y)}
 }
 
 func (self *paan) getShader(typ int, src string) (shader *js.Object) {
@@ -165,8 +170,6 @@ func (self *paan) SetResolution() {
         self.canvas.Set("height", self.height)
     }
     self.gl.Viewport(0, 0, self.width, self.height);
-    self.gl.Uniform2f(
-        self.uResolution, float32(self.width), float32(self.height))
 }
 
 func (self *paan) Draw() {
@@ -174,24 +177,28 @@ func (self *paan) Draw() {
     self.gl.ClearColor(0.0, 1.0, 1.0, 1.0) // cyanish
     self.gl.Clear(self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT)
 
-    // set up uniform matrices
-    // pMatrix := mgl32.Perspective(
-    //     mgl32.DegToRad(45.0), 
-    //     float32(self.width)/float32(self.height),
-    //     0.1, 100.0)
-    // self.gl.UniformMatrix4fv(self.uPMatrix, false, floatifyMat4(pMatrix));
-
-    // mvMatrix := mgl32.Translate3D(0.0, 0.0, -4.0)
-    // self.gl.UniformMatrix4fv(self.uMVMatrix, false, floatifyMat4(mvMatrix));
+    // set up transform matrix
+    transform := self.Transform()
+    self.Log(fmt.Sprint(transform))
+    self.gl.UniformMatrix3fv(self.uTransform, false, transform);
 
     for _, bff := range self.meshdeks {
         self.drawBuff(bff)
     }
 }
 
-func floatifyMat4(m mgl32.Mat4) (f []float32) {
+func (self *paan) Transform() []float32 {
+    m := mgl32.Translate2D(-1.0, -1.0) // move origin to corner
+    zm := mgl32.Scale2D(
+        self.zoom[0] * 2.0 / float32(self.width), 
+        self.zoom[1] * 2.0 / float32(self.height))
+    pm := mgl32.Translate2D(self.pan[0], self.pan[1])
+    m = m.Mul3(zm)
+    m = m.Mul3(pm)
+    
+    t := []float32{}
     for _, s := range m {
-        f = append(f, float32(s))
+        t = append(t, float32(s))
     }
-    return f
+    return t
 }
