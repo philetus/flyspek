@@ -1,6 +1,6 @@
 // triangle mesh interface
 
-package mesh2
+package mesh
 import (
     "github.com/go-gl/mathgl/mgl32" // vector & matrix lib
 )

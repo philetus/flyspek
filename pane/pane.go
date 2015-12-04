@@ -1,11 +1,11 @@
-package paan
+package pane
 
 import (
     "fmt"
     "github.com/gopherjs/gopherjs/js"
     "github.com/gopherjs/webgl"
     "github.com/go-gl/mathgl/mgl32" // vector & matrix lib
-    "github.com/philetus/flyspek/mesh2"
+    "github.com/philetus/flyspek/mesh"
 )
 
 const vertexShaderSource = `
@@ -50,11 +50,10 @@ const fragShaderSource = `
     }
 `
 
-type paan struct { // paan type hidden, call paan.New() to create paan
+type pane struct { // pane type hidden, call pane.New() to create pane
     console *js.Object // browser console to log to
 
-    document *js.Object
-    canvas *js.Object
+    window, document, canvas *js.Object
     gl *webgl.Context
     width, height int
     zoom, pan []float32
@@ -64,20 +63,21 @@ type paan struct { // paan type hidden, call paan.New() to create paan
     uTransform *js.Object // uniform shader variables
     aVertex, aBezier, aCurve, aColor int // varying shader variables
 
-    meshdeks map[mesh2.Number]*glbuff
+    meshdeks map[mesh.Number]*glbuff
 }
 
-func New() *paan {
-    self := new(paan) // allocate new paan struct
-    self.meshdeks = make(map[mesh2.Number]*glbuff) // allocate mesh buffer map
+func New() *pane {
+    self := new(pane) // allocate new pane struct
+    self.meshdeks = make(map[mesh.Number]*glbuff) // allocate mesh buffer map
     self.zoom = []float32{1.0, 1.0} // zoom defaults to 1.0
     self.pan = []float32{0.0, 0.0}
 
     // connect console
     self.console = js.Global.Get("console")
-    self.Log("creating new paan")
+    self.Log("creating new pane")
 
     // create canvas and append to document
+    self.window = js.Global.Get("window")
     self.document = js.Global.Get("document")
     self.canvas = self.document.Call("createElement", "canvas")
     self.document.Get("body").Call("appendChild", self.canvas)
@@ -104,7 +104,7 @@ func New() *paan {
     return self
 }
 
-func (self *paan) initShaders() {
+func (self *pane) initShaders() {
 
     // enable gl flags
     self.gl.GetExtension("OES_standard_derivatives")
@@ -136,19 +136,19 @@ func (self *paan) initShaders() {
     self.uTransform = self.gl.GetUniformLocation(self.shader, "u_transform")
 }
 
-func (self *paan) Log(msg string) {
+func (self *pane) Log(msg string) {
     self.console.Call("log", msg)
 }
 
-func (self *paan) SetZoom(x, y float32) {
+func (self *pane) SetZoom(x, y float32) {
     self.zoom = []float32{float32(x), float32(y)}
 }
 
-func (self *paan) SetPan(x, y float32) {
+func (self *pane) SetPan(x, y float32) {
     self.pan = []float32{float32(x), float32(y)}
 }
 
-func (self *paan) getShader(typ int, src string) (shader *js.Object) {
+func (self *pane) getShader(typ int, src string) (shader *js.Object) {
     shader = self.gl.CreateShader(typ)
     self.gl.ShaderSource(shader, src)
     self.gl.CompileShader(shader)
@@ -160,7 +160,7 @@ func (self *paan) getShader(typ int, src string) (shader *js.Object) {
     return shader
 }
 
-func (self *paan) SetResolution() {
+func (self *pane) SetResolution() {
     self.width = self.canvas.Get("clientWidth").Int()
     self.height = self.canvas.Get("clientHeight").Int()
 
@@ -172,7 +172,7 @@ func (self *paan) SetResolution() {
     self.gl.Viewport(0, 0, self.width, self.height);
 }
 
-func (self *paan) Draw() {
+func (self *pane) Draw() {
     self.SetResolution()
     self.gl.ClearColor(0.0, 1.0, 1.0, 1.0) // cyanish
     self.gl.Clear(self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT)
@@ -187,7 +187,7 @@ func (self *paan) Draw() {
     }
 }
 
-func (self *paan) Transform() []float32 {
+func (self *pane) Transform() []float32 {
     m := mgl32.Translate2D(-1.0, -1.0) // move origin to corner
     zm := mgl32.Scale2D(
         self.zoom[0] * 2.0 / float32(self.width), 

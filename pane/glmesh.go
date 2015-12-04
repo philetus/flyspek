@@ -1,10 +1,10 @@
-package paan
+package pane
 
 import (
     //"fmt"
     "github.com/gopherjs/gopherjs/js"
     //"github.com/go-gl/mathgl/mgl32" // vector & matrix lib
-    "github.com/philetus/flyspek/mesh2"
+    "github.com/philetus/flyspek/mesh"
 )
 
 const (
@@ -31,7 +31,7 @@ var (
 )
 
 type glbuff struct {
-    nmbr mesh2.Number // id number of buffered mesh
+    nmbr mesh.Number // id number of buffered mesh
     lngth int // number of triangles in mesh
     vrts *js.Object
     txtrs *js.Object
@@ -39,7 +39,7 @@ type glbuff struct {
     clrs *js.Object
 }
 
-func (self *paan) BuffMesh(msh mesh2.Mesh) {
+func (self *pane) BuffMesh(msh mesh.Mesh) {
     bff := &glbuff{}
 
     // set id number and triangle length
@@ -66,15 +66,15 @@ func (self *paan) BuffMesh(msh mesh2.Mesh) {
         // append textures and curves according to triangle flavor
         switch trngl.Flvr {
 
-        case mesh2.FILLED:
+        case mesh.FILLED:
             txtrs = append(txtrs, fill_texture...)
             crvs = append(crvs, fill_curve...)
 
-        case mesh2.CONVEX:
+        case mesh.CONVEX:
             txtrs = append(txtrs, bezier_texture...)
             crvs = append(crvs, convex_curve...)
 
-        case mesh2.CONCAVE:
+        case mesh.CONCAVE:
             txtrs = append(txtrs, bezier_texture...)
             crvs = append(crvs, concave_curve...)
         }
@@ -100,7 +100,7 @@ func (self *paan) BuffMesh(msh mesh2.Mesh) {
     self.meshdeks[bff.nmbr] = bff
 }
 
-func (self *paan) drawBuff(bff *glbuff) {
+func (self *pane) drawBuff(bff *glbuff) {
 
     // set attribute pointers
     self.gl.BindBuffer(self.gl.ARRAY_BUFFER, bff.vrts)
@@ -120,6 +120,6 @@ func (self *paan) drawBuff(bff *glbuff) {
     self.gl.DrawArrays(self.gl.TRIANGLES, 0, bff.lngth)
 }
 
-func (self *paan) DropBuff(nmbr mesh2.Number) {
+func (self *pane) DropBuff(nmbr mesh.Number) {
     delete(self.meshdeks, nmbr)
 }

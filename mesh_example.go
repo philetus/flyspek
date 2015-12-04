@@ -3,16 +3,16 @@ package main
 import (
     // "github.com/gopherjs/gopherjs/js"
     "github.com/go-gl/mathgl/mgl32"
-    "github.com/philetus/flyspek/mesh2"
-    "github.com/philetus/flyspek/paan"
+    "github.com/philetus/flyspek/mesh"
+    "github.com/philetus/flyspek/pane"
 )
 
 func main() {
 
-    pn := paan.New()
+    pn := pane.New()
 
     // build mesh
-    msh := mesh2.Mesh{
+    msh := mesh.Mesh{
         Nmbr: 1,
         Vrts: []mgl32.Vec2{
                 {50, 50},   // {-1.0,  -0.5}, // a 0
@@ -28,20 +28,20 @@ func main() {
                 {0.0, 1.0, 1.0, 1.0}, // d
                 {1.0, 1.0, 0.0, 1.0}, // e
             },
-        Trngls: []mesh2.Triangle{
+        Trngls: []mesh.Triangle{
                 { 
-                    Vnd: mesh2.Nd{0, 1, 2}, 
-                    Flvr: mesh2.CONCAVE, 
-                    Cnd: mesh2.Nd{0, 1, 2}, 
+                    Vnd: mesh.Nd{0, 1, 2}, 
+                    Flvr: mesh.CONCAVE, 
+                    Cnd: mesh.Nd{0, 1, 2}, 
                 },
                 { 
-                    Vnd: mesh2.Nd{1, 3, 0}, 
-                    Flvr: mesh2.CONVEX,
-                    Cnd: mesh2.Nd{1, 3, 0}, 
+                    Vnd: mesh.Nd{1, 3, 0}, 
+                    Flvr: mesh.CONVEX,
+                    Cnd: mesh.Nd{1, 3, 0}, 
                 },
                 { 
-                    Vnd: mesh2.Nd{2, 4, 1}, 
-                    Cnd: mesh2.Nd{2, 4, 1},
+                    Vnd: mesh.Nd{2, 4, 1}, 
+                    Cnd: mesh.Nd{2, 4, 1},
                 },
             },
     }
