@@ -22,6 +22,7 @@ type Triangle struct { // triangle defined by 3 indices into vertex list
 
 type Mesh struct {
     Nmbr Number
+    Dpth float32
     Vrts []mgl32.Vec2
     Clrs []mgl32.Vec4
     Trngls []Triangle

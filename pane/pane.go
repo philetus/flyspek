@@ -50,15 +50,6 @@ const fragShaderSource = `
     }
 `
 
-//type signal interface { 
-    // resize(), zoom(float, float), pan(float, float), draw, push(mesh)
-    // pointerdown(float,float), 
-    //   pointerup(float, float), 
-    //   pointermove(float, float),
-    //   keydown(int),
-    //   keyup(int)
-//}
-
 type pane struct { // pane type hidden, call pane.New() to create pane
     console *js.Object // browser console to log to
 
@@ -76,6 +67,10 @@ type pane struct { // pane type hidden, call pane.New() to create pane
 
     resizePipe chan bool
     meshPipe chan []mesh.Mesh
+    zoomPipe, panPipe chan []float32
+
+    //PointerPipe chan PointerEvent
+    //KeyPipe chan KeyEvent
 }
 
 func New() *pane {
@@ -116,6 +111,8 @@ func New() *pane {
     // init channels
     self.resizePipe = make(chan bool, 1) // only need to know if >= 1 request
     self.meshPipe = make(chan []mesh.Mesh)
+    self.zoomPipe = make(chan []float32)
+    self.panPipe = make(chan []float32)
 
     // start event loop as goroutine
     go self.loop()
@@ -146,8 +143,8 @@ func (self *pane) loop() {
             self.SetResolution()
             self.draw()
 
-        case meshdiff := <- self.meshPipe: // buffer new meshes then redraw
-            for _, msh := range meshdiff {
+        case mshdff := <- self.meshPipe: // buffer new meshes then redraw
+            for _, msh := range mshdff {
                 if msh.Trngls == nil { // delete meshes with no triangles
                     self.DeleteMesh(msh)
                 } else {
@@ -155,6 +152,14 @@ func (self *pane) loop() {
                 }
             }
             self.draw()
+
+        case zm := <- self.zoomPipe:
+            self.zoom = zm[:2]
+            self.setTransform()
+
+        case pan := <- self.panPipe:
+            self.pan = pan[:2]
+            self.setTransform()
         }
     }
 }
@@ -196,11 +201,11 @@ func (self *pane) Log(msg string) {
 }
 
 func (self *pane) SetZoom(x, y float32) {
-    self.zoom = []float32{float32(x), float32(y)}
+    self.zoomPipe <- []float32{float32(x), float32(y)}
 }
 
 func (self *pane) SetPan(x, y float32) {
-    self.pan = []float32{float32(x), float32(y)}
+    self.panPipe <- []float32{float32(x), float32(y)}
 }
 
 func (self *pane) getShader(typ int, src string) (shader *js.Object) {
@@ -224,19 +229,17 @@ func (self *pane) SetResolution() {
         self.canvas.Set("width", self.width)
         self.canvas.Set("height", self.height)
     }
-    self.gl.Viewport(0, 0, self.width, self.height);
+    self.gl.Viewport(0, 0, self.width, self.height)
+
+    // regenerate transform matrix based on new size and push to gl
+    self.setTransform()
 }
 
 func (self *pane) draw() {
     self.gl.ClearColor(0.0, 1.0, 1.0, 1.0) // cyanish
     self.gl.Clear(self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT)
 
-    // set up transform matrix
-    transform := self.Transform()
-    //self.Log(fmt.Sprint(transform))
-    self.gl.UniformMatrix3fv(self.uTransform, false, transform);
-
-    for _, bff := range self.meshdeks {
+    for _, bff := range self.buffsByDepth() {
         self.drawBuff(bff)
     }
 }
@@ -245,18 +248,19 @@ func (self *pane) Draw(mshdff ...mesh.Mesh) {
     self.meshPipe <- mshdff // send mesh diff down mesh pipe to trigger redraw
 }
 
-func (self *pane) Transform() []float32 {
+func (self *pane) setTransform() {
     m := mgl32.Translate2D(-1.0, -1.0) // move origin to corner
     zm := mgl32.Scale2D(
         self.zoom[0] * 2.0 / float32(self.width), 
         self.zoom[1] * 2.0 / float32(self.height))
     pm := mgl32.Translate2D(self.pan[0], self.pan[1])
     m = m.Mul3(zm)
-    m = m.Mul3(pm)
+    self.transform = m.Mul3(pm)
     
     t := []float32{}
-    for _, s := range m {
+    for _, s := range self.transform {
         t = append(t, float32(s))
     }
-    return t
+
+    self.gl.UniformMatrix3fv(self.uTransform, false, t)
 }

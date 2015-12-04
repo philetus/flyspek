@@ -2,6 +2,7 @@ package pane
 
 import (
     //"fmt"
+    "sort"
     "github.com/gopherjs/gopherjs/js"
     //"github.com/go-gl/mathgl/mgl32" // vector & matrix lib
     "github.com/philetus/flyspek/mesh"
@@ -32,6 +33,7 @@ var (
 
 type glbuff struct {
     nmbr mesh.Number // id number of buffered mesh
+    dpth float32
     lngth int // number of triangles in mesh
     vrts *js.Object
     txtrs *js.Object
@@ -53,6 +55,8 @@ func (self *pane) BuffMesh(msh mesh.Mesh) {
         // set id number
         bff.nmbr = msh.Nmbr
     }
+
+    bff.dpth = msh.Dpth // meshes are rendered from highest to lowest depth
 
     // write triangle data into flat float32 slices
     bff.lngth = len(msh.Trngls) * 3 // length is # of triangle vertices
@@ -129,4 +133,29 @@ func (self *pane) drawBuff(bff *glbuff) {
 
 func (self *pane) DropBuff(nmbr mesh.Number) {
     delete(self.meshdeks, nmbr)
+}
+
+type byDepth []*glbuff
+func (d byDepth) Len() int {
+    return len(d) 
+}
+func (d byDepth) Swap(i, j int) {
+    d[i], d[j] = d[j], d[i] 
+}
+func (d byDepth) Less(i, j int) bool { // sort from highest to lowest depth
+    return d[j].dpth < d[i].dpth 
+}
+
+func (self *pane) buffsByDepth() []*glbuff {
+
+    // load meshdeks values into a slice
+    bffs := make([]*glbuff, 0, len(self.meshdeks))
+    for _, bff := range self.meshdeks {
+        bffs = append(bffs, bff)
+    }
+
+    // sort by depth
+    sort.Sort(byDepth(bffs))
+
+    return bffs
 }

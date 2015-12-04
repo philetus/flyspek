@@ -14,6 +14,7 @@ func main() {
     // build mesh
     msh := mesh.Mesh{
         Nmbr: 1,
+        Dpth: 1.0,
         Vrts: []mgl32.Vec2{
                 {50, 50},   // {-1.0,  -0.5}, // a 0
                 {150, 150}, // { 0.0,  0.5}, // b 1
@@ -48,6 +49,7 @@ func main() {
 
     m2 := mesh.Mesh{
         Nmbr: 2,
+        Dpth: 0.0,
         Vrts: []mgl32.Vec2{
             {100, 100},
             {100, 200},
@@ -63,7 +65,6 @@ func main() {
 
     pn.SetZoom(2.0, 2.0)
     pn.SetPan(0.0, 50.0)
-    pn.SetResolution()
 
     // add meshes to pane and draw them
     pn.Draw(msh, m2)
