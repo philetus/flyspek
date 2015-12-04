@@ -40,19 +40,22 @@ type glbuff struct {
 }
 
 func (self *pane) BuffMesh(msh mesh.Mesh) {
-    bff := &glbuff{}
+    var bff *glbuff; var ok bool
+    if bff, ok = self.meshdeks[msh.Nmbr]; !ok {
+        bff = &glbuff{}
 
-    // set id number and triangle length
-    bff.nmbr = msh.Nmbr
-    bff.lngth = len(msh.Trngls) * 3 // length is # of triangle vertices
+        // prepare gl buffers to hold mesh data
+        bff.vrts = self.gl.CreateBuffer()
+        bff.txtrs = self.gl.CreateBuffer()
+        bff.crvs = self.gl.CreateBuffer()
+        bff.clrs = self.gl.CreateBuffer()
 
-    // prepare gl buffers to hold mesh data
-    bff.vrts = self.gl.CreateBuffer()
-    bff.txtrs = self.gl.CreateBuffer()
-    bff.crvs = self.gl.CreateBuffer()
-    bff.clrs = self.gl.CreateBuffer()
+        // set id number
+        bff.nmbr = msh.Nmbr
+    }
 
     // write triangle data into flat float32 slices
+    bff.lngth = len(msh.Trngls) * 3 // length is # of triangle vertices
     vrts := make([]float32, 0, bff.lngth * VERTEX_STRIDE)
     txtrs := make([]float32, 0, bff.lngth * TEXTURE_STRIDE)
     crvs := make([]float32, 0, bff.lngth * CURVE_STRIDE)
@@ -98,6 +101,10 @@ func (self *pane) BuffMesh(msh mesh.Mesh) {
     self.gl.BufferData(self.gl.ARRAY_BUFFER, clrs, self.gl.STATIC_DRAW)
 
     self.meshdeks[bff.nmbr] = bff
+}
+
+func (self *pane) DeleteMesh(msh mesh.Mesh) { // TODO: free gl buffers?
+    delete(self.meshdeks, msh.Nmbr)
 }
 
 func (self *pane) drawBuff(bff *glbuff) {

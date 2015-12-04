@@ -1,7 +1,7 @@
 package pane
 
 import (
-    "fmt"
+    //"fmt"
     "github.com/gopherjs/gopherjs/js"
     "github.com/gopherjs/webgl"
     "github.com/go-gl/mathgl/mgl32" // vector & matrix lib
@@ -45,10 +45,19 @@ const fragShaderSource = `
         float fx = 2.0 * v_bezier.x * px.x - px.y;
         float fy = 2.0 * v_bezier.y * py.x - py.y;
         float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);
-        float alpha = clamp((0.5 - sd) * v_color.w, 0.0, 1.0);
+        float alpha = clamp((0.5 - sd), 0.0, v_color.w);
         gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);
     }
 `
+
+//type signal interface { 
+    // resize(), zoom(float, float), pan(float, float), draw, push(mesh)
+    // pointerdown(float,float), 
+    //   pointerup(float, float), 
+    //   pointermove(float, float),
+    //   keydown(int),
+    //   keyup(int)
+//}
 
 type pane struct { // pane type hidden, call pane.New() to create pane
     console *js.Object // browser console to log to
@@ -64,6 +73,9 @@ type pane struct { // pane type hidden, call pane.New() to create pane
     aVertex, aBezier, aCurve, aColor int // varying shader variables
 
     meshdeks map[mesh.Number]*glbuff
+
+    resizePipe chan bool
+    meshPipe chan []mesh.Mesh
 }
 
 func New() *pane {
@@ -101,7 +113,50 @@ func New() *pane {
         self.gl.ZERO, self.gl.ONE)
     self.gl.Enable(self.gl.BLEND)
 
+    // init channels
+    self.resizePipe = make(chan bool, 1) // only need to know if >= 1 request
+    self.meshPipe = make(chan []mesh.Mesh)
+
+    // start event loop as goroutine
+    go self.loop()
+
     return self
+}
+
+func (self *pane) loop() {
+
+    // set callbacks
+    self.window.Call(
+        "addEventListener", "resize", 
+        func() {
+            select { // nonblocking attempt to signal resize channel
+            case self.resizePipe <- true:
+            default:
+            }
+        },
+    )
+
+    // set initial resolution
+    self.SetResolution()
+
+    for { // loop and listen to input channels
+        select {
+
+        case <- self.resizePipe:
+            self.SetResolution()
+            self.draw()
+
+        case meshdiff := <- self.meshPipe: // buffer new meshes then redraw
+            for _, msh := range meshdiff {
+                if msh.Trngls == nil { // delete meshes with no triangles
+                    self.DeleteMesh(msh)
+                } else {
+                    self.BuffMesh(msh)
+                }
+            }
+            self.draw()
+        }
+    }
 }
 
 func (self *pane) initShaders() {
@@ -172,19 +227,22 @@ func (self *pane) SetResolution() {
     self.gl.Viewport(0, 0, self.width, self.height);
 }
 
-func (self *pane) Draw() {
-    self.SetResolution()
+func (self *pane) draw() {
     self.gl.ClearColor(0.0, 1.0, 1.0, 1.0) // cyanish
     self.gl.Clear(self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT)
 
     // set up transform matrix
     transform := self.Transform()
-    self.Log(fmt.Sprint(transform))
+    //self.Log(fmt.Sprint(transform))
     self.gl.UniformMatrix3fv(self.uTransform, false, transform);
 
     for _, bff := range self.meshdeks {
         self.drawBuff(bff)
     }
+}
+
+func (self *pane) Draw(mshdff ...mesh.Mesh) {
+    self.meshPipe <- mshdff // send mesh diff down mesh pipe to trigger redraw
 }
 
 func (self *pane) Transform() []float32 {

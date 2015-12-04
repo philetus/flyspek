@@ -13943,7 +13943,7 @@ $packages["reflect"] = (function() {
 	return $pkg;
 })();
 $packages["fmt"] = (function() {
-	var $pkg = {}, $init, errors, io, math, os, reflect, strconv, sync, utf8, fmtFlags, fmt, State, Formatter, Stringer, GoStringer, buffer, pp, runeUnreader, scanError, ss, ssave, sliceType, sliceType$1, ptrType, arrayType, arrayType$1, ptrType$1, arrayType$2, sliceType$2, ptrType$2, ptrType$5, ptrType$25, funcType, padZeroBytes, padSpaceBytes, trueBytes, falseBytes, commaSpaceBytes, nilAngleBytes, nilParenBytes, nilBytes, mapBytes, percentBangBytes, missingBytes, badIndexBytes, panicBytes, extraBytes, irparenBytes, bytesBytes, badWidthBytes, badPrecBytes, noVerbBytes, ppFree, intBits, uintptrBits, byteType, space, ssFree, complexError, boolError, _r, _r$1, init, doPrec, newPrinter, Fprintf, Sprint, Fprintln, getField, tooLarge, parsenum, intFromArg, parseArgNumber, isSpace, notSpace, indexRune;
+	var $pkg = {}, $init, errors, io, math, os, reflect, strconv, sync, utf8, fmtFlags, fmt, State, Formatter, Stringer, GoStringer, buffer, pp, runeUnreader, scanError, ss, ssave, sliceType, sliceType$1, ptrType, arrayType, arrayType$1, ptrType$1, arrayType$2, sliceType$2, ptrType$2, ptrType$5, ptrType$25, funcType, padZeroBytes, padSpaceBytes, trueBytes, falseBytes, commaSpaceBytes, nilAngleBytes, nilParenBytes, nilBytes, mapBytes, percentBangBytes, missingBytes, badIndexBytes, panicBytes, extraBytes, irparenBytes, bytesBytes, badWidthBytes, badPrecBytes, noVerbBytes, ppFree, intBits, uintptrBits, byteType, space, ssFree, complexError, boolError, _r, _r$1, init, doPrec, newPrinter, Fprintf, Fprintln, getField, tooLarge, parsenum, intFromArg, parseArgNumber, isSpace, notSpace, indexRune;
 	errors = $packages["errors"];
 	io = $packages["io"];
 	math = $packages["math"];
@@ -14769,18 +14769,6 @@ $packages["fmt"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: Fprintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.a = a; $f.err = err; $f.format = format; $f.n = n; $f.p = p; $f.w = w; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Fprintf = Fprintf;
-	Sprint = function(a) {
-		var $ptr, _r$2, a, p, s, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; a = $f.a; p = $f.p; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r$2 = newPrinter(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		p = _r$2;
-		$r = p.doPrint(a, false, false); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		s = $bytesToString(p.buf);
-		p.free();
-		return s;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: Sprint }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.a = a; $f.p = p; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.Sprint = Sprint;
 	Fprintln = function(w, a) {
 		var $ptr, _r$2, _r$3, _tuple, a, err, n, p, w, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; a = $f.a; err = $f.err; n = $f.n; p = $f.p; w = $f.w; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -21464,8 +21452,7 @@ $packages["github.com/gopherjs/webgl"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/philetus/flyspek/pane"] = (function() {
-	var $pkg = {}, $init, fmt, mgl32, js, webgl, mesh, glbuff, pane, sliceType, ptrType, arrayType, ptrType$1, sliceType$1, ptrType$2, ptrType$3, mapType, bezier_texture, fill_texture, fill_curve, convex_curve, concave_curve, New;
-	fmt = $packages["fmt"];
+	var $pkg = {}, $init, mgl32, js, webgl, mesh, glbuff, pane, sliceType, ptrType, ptrType$1, arrayType, ptrType$2, sliceType$1, funcType, sliceType$2, ptrType$3, mapType, chanType, chanType$1, bezier_texture, fill_texture, fill_curve, convex_curve, concave_curve, New;
 	mgl32 = $packages["github.com/go-gl/mathgl/mgl32"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	webgl = $packages["github.com/gopherjs/webgl"];
@@ -21488,14 +21475,14 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		this.crvs = crvs_;
 		this.clrs = clrs_;
 	});
-	pane = $pkg.pane = $newType(0, $kindStruct, "pane.pane", "pane", "github.com/philetus/flyspek/pane", function(console_, window_, document_, canvas_, gl_, width_, height_, zoom_, pan_, transform_, shader_, uTransform_, aVertex_, aBezier_, aCurve_, aColor_, meshdeks_) {
+	pane = $pkg.pane = $newType(0, $kindStruct, "pane.pane", "pane", "github.com/philetus/flyspek/pane", function(console_, window_, document_, canvas_, gl_, width_, height_, zoom_, pan_, transform_, shader_, uTransform_, aVertex_, aBezier_, aCurve_, aColor_, meshdeks_, resizePipe_, meshPipe_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.console = null;
 			this.window = null;
 			this.document = null;
 			this.canvas = null;
-			this.gl = ptrType.nil;
+			this.gl = ptrType$1.nil;
 			this.width = 0;
 			this.height = 0;
 			this.zoom = sliceType.nil;
@@ -21508,6 +21495,8 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 			this.aCurve = 0;
 			this.aColor = 0;
 			this.meshdeks = false;
+			this.resizePipe = $chanNil;
+			this.meshPipe = $chanNil;
 			return;
 		}
 		this.console = console_;
@@ -21527,26 +21516,39 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		this.aCurve = aCurve_;
 		this.aColor = aColor_;
 		this.meshdeks = meshdeks_;
+		this.resizePipe = resizePipe_;
+		this.meshPipe = meshPipe_;
 	});
 	sliceType = $sliceType($Float32);
-	ptrType = $ptrType(webgl.Context);
+	ptrType = $ptrType(glbuff);
+	ptrType$1 = $ptrType(webgl.Context);
 	arrayType = $arrayType($Float32, 9);
-	ptrType$1 = $ptrType(pane);
-	sliceType$1 = $sliceType($emptyInterface);
-	ptrType$2 = $ptrType(js.Object);
-	ptrType$3 = $ptrType(glbuff);
-	mapType = $mapType(mesh.Number, ptrType$3);
+	ptrType$2 = $ptrType(pane);
+	sliceType$1 = $sliceType(mesh.Mesh);
+	funcType = $funcType([], [], false);
+	sliceType$2 = $sliceType(mesh.Triangle);
+	ptrType$3 = $ptrType(js.Object);
+	mapType = $mapType(mesh.Number, ptrType);
+	chanType = $chanType($Bool, false, false);
+	chanType$1 = $chanType(sliceType$1, false, false);
 	pane.ptr.prototype.BuffMesh = function(msh) {
-		var $ptr, _i, _key, _ref, _ref$1, bff, clrs, crvs, msh, self, trngl, txtrs, vrts;
+		var $ptr, _entry, _i, _key, _ref, _ref$1, _tuple, bff, clrs, crvs, msh, ok, self, trngl, txtrs, vrts;
 		msh = $clone(msh, mesh.Mesh);
 		self = this;
-		bff = new glbuff.ptr(0, 0, null, null, null, null);
-		bff.nmbr = msh.Nmbr;
+		bff = ptrType.nil;
+		ok = false;
+		_tuple = (_entry = self.meshdeks[mesh.Number.keyFor(msh.Nmbr)], _entry !== undefined ? [_entry.v, true] : [ptrType.nil, false]);
+		bff = _tuple[0];
+		ok = _tuple[1];
+		if (!ok) {
+			bff = new glbuff.ptr(0, 0, null, null, null, null);
+			bff.vrts = self.gl.CreateBuffer();
+			bff.txtrs = self.gl.CreateBuffer();
+			bff.crvs = self.gl.CreateBuffer();
+			bff.clrs = self.gl.CreateBuffer();
+			bff.nmbr = msh.Nmbr;
+		}
 		bff.lngth = msh.Trngls.$length * 3 >> 0;
-		bff.vrts = self.gl.CreateBuffer();
-		bff.txtrs = self.gl.CreateBuffer();
-		bff.crvs = self.gl.CreateBuffer();
-		bff.clrs = self.gl.CreateBuffer();
 		vrts = $makeSlice(sliceType, 0, (bff.lngth * 2 >> 0));
 		txtrs = $makeSlice(sliceType, 0, (bff.lngth * 2 >> 0));
 		crvs = $makeSlice(sliceType, 0, (bff.lngth * 1 >> 0));
@@ -21582,6 +21584,13 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		_key = bff.nmbr; (self.meshdeks || $throwRuntimeError("assignment to entry in nil map"))[mesh.Number.keyFor(_key)] = { k: _key, v: bff };
 	};
 	pane.prototype.BuffMesh = function(msh) { return this.$val.BuffMesh(msh); };
+	pane.ptr.prototype.DeleteMesh = function(msh) {
+		var $ptr, msh, self;
+		msh = $clone(msh, mesh.Mesh);
+		self = this;
+		delete self.meshdeks[mesh.Number.keyFor(msh.Nmbr)];
+	};
+	pane.prototype.DeleteMesh = function(msh) { return this.$val.DeleteMesh(msh); };
 	pane.ptr.prototype.drawBuff = function(bff) {
 		var $ptr, bff, self;
 		self = this;
@@ -21605,7 +21614,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	New = function() {
 		var $ptr, _r, _tuple, attrs, err, gl, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; attrs = $f.attrs; err = $f.err; gl = $f.gl; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		self = new pane.ptr(null, null, null, null, ptrType.nil, 0, 0, sliceType.nil, sliceType.nil, arrayType.zero(), null, null, 0, 0, 0, 0, false);
+		self = new pane.ptr(null, null, null, null, ptrType$1.nil, 0, 0, sliceType.nil, sliceType.nil, arrayType.zero(), null, null, 0, 0, 0, 0, false, $chanNil, $chanNil);
 		self.meshdeks = {};
 		self.zoom = new sliceType([1, 1]);
 		self.pan = new sliceType([0, 0]);
@@ -21625,23 +21634,67 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 1:
 			_r = err.Error(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 			$r = self.Log("error: " + _r); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			return ptrType$1.nil;
+			return ptrType$2.nil;
 		/* } */ case 2:
 		self.gl = gl;
 		self.initShaders();
 		self.gl.BlendFuncSeparate($parseInt(self.gl.Object.SRC_ALPHA) >> 0, $parseInt(self.gl.Object.ONE_MINUS_SRC_ALPHA) >> 0, $parseInt(self.gl.Object.ZERO) >> 0, $parseInt(self.gl.Object.ONE) >> 0);
 		self.gl.Enable($parseInt(self.gl.Object.BLEND) >> 0);
+		self.resizePipe = new $Chan($Bool, 1);
+		self.meshPipe = new $Chan(sliceType$1, 0);
+		$go($methodVal(self, "loop"), []);
 		return self;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: New }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.attrs = attrs; $f.err = err; $f.gl = gl; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.New = New;
+	pane.ptr.prototype.loop = function() {
+		var $ptr, _i, _r, _ref, _selection, meshdiff, msh, self, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; _selection = $f._selection; meshdiff = $f.meshdiff; msh = $f.msh; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		self = [self];
+		self[0] = this;
+		self[0].window.addEventListener($externalize("resize", $String), $externalize((function(self) { return function $b() {
+			var $ptr, _selection, $r;
+			/* */ var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _selection = $f._selection; $r = $f.$r; }
+			_selection = $select([[self[0].resizePipe, true], []]);
+			if (_selection[0] === 0) {
+			} else if (_selection[0] === 1) {
+			}
+			/* */ if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._selection = _selection; $f.$r = $r; return $f;
+		}; })(self), funcType));
+		self[0].SetResolution();
+		/* while (true) { */ case 1:
+			_r = $select([[self[0].resizePipe], [self[0].meshPipe]]); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_selection = _r;
+			if (_selection[0] === 0) {
+				self[0].SetResolution();
+				self[0].draw();
+			} else if (_selection[0] === 1) {
+				meshdiff = _selection[1][0];
+				_ref = meshdiff;
+				_i = 0;
+				while (true) {
+					if (!(_i < _ref.$length)) { break; }
+					msh = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mesh.Mesh);
+					if (msh.Trngls === sliceType$2.nil) {
+						self[0].DeleteMesh(msh);
+					} else {
+						self[0].BuffMesh(msh);
+					}
+					_i++;
+				}
+				self[0].draw();
+			}
+		/* } */ $s = 1; continue; case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pane.ptr.prototype.loop }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._selection = _selection; $f.meshdiff = meshdiff; $f.msh = msh; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	pane.prototype.loop = function() { return this.$val.loop(); };
 	pane.ptr.prototype.initShaders = function() {
 		var $ptr, fragShader, self, vertexShader;
 		self = this;
 		self.gl.GetExtension("OES_standard_derivatives");
 		self.shader = self.gl.CreateProgram();
 		vertexShader = self.getShader($parseInt(self.gl.Object.VERTEX_SHADER) >> 0, "\n    attribute vec2 a_vertex;\n    attribute vec2 a_bezier;\n    attribute float a_curve;\n    attribute vec4 a_color;\n\n    uniform mat3 u_transform; // local coordinate transform\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {       \n        vec3 transformed = u_transform * vec3(a_vertex, 1.0);\n        gl_Position = vec4(transformed * vec3(1.0, -1.0, 0.0), 1.0);\n        v_bezier = a_bezier;\n        v_curve = a_curve;\n        v_color = a_color;\n    }\n");
-		fragShader = self.getShader($parseInt(self.gl.Object.FRAGMENT_SHADER) >> 0, "\n    #extension GL_OES_standard_derivatives : enable\n\n    #ifdef GL_ES\n    precision highp float;\n    #endif\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {\n        vec2 px = dFdx(v_bezier);\n        vec2 py = dFdy(v_bezier);\n        float fx = 2.0 * v_bezier.x * px.x - px.y;\n        float fy = 2.0 * v_bezier.y * py.x - py.y;\n        float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);\n        float alpha = clamp((0.5 - sd) * v_color.w, 0.0, 1.0);\n        gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);\n    }\n");
+		fragShader = self.getShader($parseInt(self.gl.Object.FRAGMENT_SHADER) >> 0, "\n    #extension GL_OES_standard_derivatives : enable\n\n    #ifdef GL_ES\n    precision highp float;\n    #endif\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {\n        vec2 px = dFdx(v_bezier);\n        vec2 py = dFdy(v_bezier);\n        float fx = 2.0 * v_bezier.x * px.x - px.y;\n        float fy = 2.0 * v_bezier.y * py.x - py.y;\n        float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);\n        float alpha = clamp((0.5 - sd), 0.0, v_color.w);\n        gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);\n    }\n");
 		self.gl.AttachShader(self.shader, vertexShader);
 		self.gl.AttachShader(self.shader, fragShader);
 		self.gl.LinkProgram(self.shader);
@@ -21706,16 +21759,12 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		self.gl.Viewport(0, 0, self.width, self.height);
 	};
 	pane.prototype.SetResolution = function() { return this.$val.SetResolution(); };
-	pane.ptr.prototype.Draw = function() {
-		var $ptr, _entry, _i, _keys, _r, _ref, bff, self, transform, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _r = $f._r; _ref = $f._ref; bff = $f.bff; self = $f.self; transform = $f.transform; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	pane.ptr.prototype.draw = function() {
+		var $ptr, _entry, _i, _keys, _ref, bff, self, transform;
 		self = this;
-		self.SetResolution();
 		self.gl.ClearColor(0, 1, 1, 1);
 		self.gl.Clear(($parseInt(self.gl.Object.COLOR_BUFFER_BIT) >> 0) | ($parseInt(self.gl.Object.DEPTH_BUFFER_BIT) >> 0));
 		transform = self.Transform();
-		_r = fmt.Sprint(new sliceType$1([transform])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		$r = self.Log(_r); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		self.gl.UniformMatrix3fv(self.uTransform, false, transform);
 		_ref = self.meshdeks;
 		_i = 0;
@@ -21731,9 +21780,16 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 			self.drawBuff(bff);
 			_i++;
 		}
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pane.ptr.prototype.Draw }; } $f.$ptr = $ptr; $f._entry = _entry; $f._i = _i; $f._keys = _keys; $f._r = _r; $f._ref = _ref; $f.bff = bff; $f.self = self; $f.transform = transform; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	pane.prototype.Draw = function() { return this.$val.Draw(); };
+	pane.prototype.draw = function() { return this.$val.draw(); };
+	pane.ptr.prototype.Draw = function(mshdff) {
+		var $ptr, mshdff, self, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; mshdff = $f.mshdff; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		self = this;
+		$r = $send(self.meshPipe, mshdff); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pane.ptr.prototype.Draw }; } $f.$ptr = $ptr; $f.mshdff = mshdff; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	pane.prototype.Draw = function(mshdff) { return this.$val.Draw(mshdff); };
 	pane.ptr.prototype.Transform = function() {
 		var $ptr, _i, _ref, m, pm, s, self, t, x, x$1, x$2, x$3, zm;
 		self = this;
@@ -21754,17 +21810,16 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		return t;
 	};
 	pane.prototype.Transform = function() { return this.$val.Transform(); };
-	ptrType$1.methods = [{prop: "BuffMesh", name: "BuffMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "drawBuff", name: "drawBuff", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([ptrType$3], [], false)}, {prop: "DropBuff", name: "DropBuff", pkg: "", typ: $funcType([mesh.Number], [], false)}, {prop: "initShaders", name: "initShaders", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "Log", name: "Log", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetZoom", name: "SetZoom", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "SetPan", name: "SetPan", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "getShader", name: "getShader", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([$Int, $String], [ptrType$2], false)}, {prop: "SetResolution", name: "SetResolution", pkg: "", typ: $funcType([], [], false)}, {prop: "Draw", name: "Draw", pkg: "", typ: $funcType([], [], false)}, {prop: "Transform", name: "Transform", pkg: "", typ: $funcType([], [sliceType], false)}];
-	glbuff.init([{prop: "nmbr", name: "nmbr", pkg: "github.com/philetus/flyspek/pane", typ: mesh.Number, tag: ""}, {prop: "lngth", name: "lngth", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "vrts", name: "vrts", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "txtrs", name: "txtrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "crvs", name: "crvs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "clrs", name: "clrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}]);
-	pane.init([{prop: "console", name: "console", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "window", name: "window", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "document", name: "document", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "canvas", name: "canvas", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "gl", name: "gl", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "width", name: "width", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "height", name: "height", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "zoom", name: "zoom", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "pan", name: "pan", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "transform", name: "transform", pkg: "github.com/philetus/flyspek/pane", typ: mgl32.Mat3, tag: ""}, {prop: "shader", name: "shader", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "uTransform", name: "uTransform", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "aVertex", name: "aVertex", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aBezier", name: "aBezier", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aCurve", name: "aCurve", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aColor", name: "aColor", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "meshdeks", name: "meshdeks", pkg: "github.com/philetus/flyspek/pane", typ: mapType, tag: ""}]);
+	ptrType$2.methods = [{prop: "BuffMesh", name: "BuffMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "DeleteMesh", name: "DeleteMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "drawBuff", name: "drawBuff", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([ptrType], [], false)}, {prop: "DropBuff", name: "DropBuff", pkg: "", typ: $funcType([mesh.Number], [], false)}, {prop: "loop", name: "loop", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "initShaders", name: "initShaders", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "Log", name: "Log", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetZoom", name: "SetZoom", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "SetPan", name: "SetPan", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "getShader", name: "getShader", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([$Int, $String], [ptrType$3], false)}, {prop: "SetResolution", name: "SetResolution", pkg: "", typ: $funcType([], [], false)}, {prop: "draw", name: "draw", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "Draw", name: "Draw", pkg: "", typ: $funcType([sliceType$1], [], true)}, {prop: "Transform", name: "Transform", pkg: "", typ: $funcType([], [sliceType], false)}];
+	glbuff.init([{prop: "nmbr", name: "nmbr", pkg: "github.com/philetus/flyspek/pane", typ: mesh.Number, tag: ""}, {prop: "lngth", name: "lngth", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "vrts", name: "vrts", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "txtrs", name: "txtrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "crvs", name: "crvs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "clrs", name: "clrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}]);
+	pane.init([{prop: "console", name: "console", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "window", name: "window", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "document", name: "document", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "canvas", name: "canvas", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "gl", name: "gl", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$1, tag: ""}, {prop: "width", name: "width", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "height", name: "height", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "zoom", name: "zoom", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "pan", name: "pan", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "transform", name: "transform", pkg: "github.com/philetus/flyspek/pane", typ: mgl32.Mat3, tag: ""}, {prop: "shader", name: "shader", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "uTransform", name: "uTransform", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "aVertex", name: "aVertex", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aBezier", name: "aBezier", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aCurve", name: "aCurve", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aColor", name: "aColor", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "meshdeks", name: "meshdeks", pkg: "github.com/philetus/flyspek/pane", typ: mapType, tag: ""}, {prop: "resizePipe", name: "resizePipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType, tag: ""}, {prop: "meshPipe", name: "meshPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$1, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = fmt.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mgl32.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = js.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = webgl.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mesh.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mgl32.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = js.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = webgl.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mesh.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		bezier_texture = new sliceType([1, 1, 0.5, 0, 0, 0]);
 		fill_texture = new sliceType([0, 1, 0, 1, 0, 1]);
 		fill_curve = new sliceType([1, 1, 1]);
@@ -21776,7 +21831,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, mgl32, mesh, pane, sliceType, sliceType$1, sliceType$2, arrayType, arrayType$1, arrayType$2, main;
+	var $pkg = {}, $init, mgl32, mesh, pane, sliceType, sliceType$1, sliceType$2, arrayType, arrayType$1, arrayType$2, sliceType$3, main;
 	mgl32 = $packages["github.com/go-gl/mathgl/mgl32"];
 	mesh = $packages["github.com/philetus/flyspek/mesh"];
 	pane = $packages["github.com/philetus/flyspek/pane"];
@@ -21786,17 +21841,19 @@ $packages["main"] = (function() {
 	arrayType = $arrayType($Float32, 2);
 	arrayType$1 = $arrayType($Float32, 4);
 	arrayType$2 = $arrayType($Int, 3);
+	sliceType$3 = $sliceType(mesh.Mesh);
 	main = function() {
-		var $ptr, _r, msh, pn, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; msh = $f.msh; pn = $f.pn; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _r, m2, msh, pn, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; m2 = $f.m2; msh = $f.msh; pn = $f.pn; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = pane.New(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		pn = _r;
 		msh = new mesh.Mesh.ptr(1, new sliceType([$toNativeArray($kindFloat32, [50, 50]), $toNativeArray($kindFloat32, [150, 150]), $toNativeArray($kindFloat32, [250, 50]), $toNativeArray($kindFloat32, [50, 170]), $toNativeArray($kindFloat32, [250, 130])]), new sliceType$1([$toNativeArray($kindFloat32, [1, 0, 0, 1]), $toNativeArray($kindFloat32, [1, 0, 1, 1]), $toNativeArray($kindFloat32, [0, 0, 1, 1]), $toNativeArray($kindFloat32, [0, 1, 1, 1]), $toNativeArray($kindFloat32, [1, 1, 0, 1])]), new sliceType$2([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 2, $toNativeArray($kindInt, [0, 1, 2])), new mesh.Triangle.ptr($toNativeArray($kindInt, [1, 3, 0]), 1, $toNativeArray($kindInt, [1, 3, 0])), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 4, 1]), 0, $toNativeArray($kindInt, [2, 4, 1]))]));
+		m2 = new mesh.Mesh.ptr(2, new sliceType([$toNativeArray($kindFloat32, [100, 100]), $toNativeArray($kindFloat32, [100, 200]), $toNativeArray($kindFloat32, [200, 200])]), new sliceType$1([$toNativeArray($kindFloat32, [1, 0, 0, 0.699999988079071])]), new sliceType$2([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 0, arrayType$2.zero())]));
 		pn.SetZoom(2, 2);
 		pn.SetPan(0, 50);
-		pn.BuffMesh(msh);
-		$r = pn.Draw(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f.msh = msh; $f.pn = pn; $f.$s = $s; $f.$r = $r; return $f;
+		pn.SetResolution();
+		$r = pn.Draw(new sliceType$3([msh, m2])); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f.m2 = m2; $f.msh = msh; $f.pn = pn; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$init = function() {
 		$pkg.$init = function() {};

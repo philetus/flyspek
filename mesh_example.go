@@ -46,12 +46,25 @@ func main() {
             },
     }
 
+    m2 := mesh.Mesh{
+        Nmbr: 2,
+        Vrts: []mgl32.Vec2{
+            {100, 100},
+            {100, 200},
+            {200, 200},
+        },
+        Clrs: []mgl32.Vec4{
+            {1.0, 0.0, 0.0, 0.7},
+        },
+        Trngls: []mesh.Triangle{
+            {Vnd: mesh.Nd{0, 1, 2}},
+        },
+    }
+
     pn.SetZoom(2.0, 2.0)
     pn.SetPan(0.0, 50.0)
+    pn.SetResolution()
 
-    // push mesh to gl buffer
-    pn.BuffMesh(msh)
-
-    // draw something
-    pn.Draw()
+    // add meshes to pane and draw them
+    pn.Draw(msh, m2)
 }
