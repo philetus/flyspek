@@ -8,48 +8,6 @@ import (
     "github.com/philetus/flyspek/mesh"
 )
 
-const vertexShaderSource = `
-    attribute vec2 a_vertex;
-    attribute vec2 a_bezier;
-    attribute float a_curve;
-    attribute vec4 a_color;
-
-    uniform mat3 u_transform; // local coordinate transform
-
-    varying vec2 v_bezier;
-    varying float v_curve;
-    varying vec4 v_color;
-
-    void main(void) {       
-        vec3 transformed = u_transform * vec3(a_vertex, 1.0);
-        gl_Position = vec4(transformed * vec3(1.0, -1.0, 0.0), 1.0);
-        v_bezier = a_bezier;
-        v_curve = a_curve;
-        v_color = a_color;
-    }
-`
-const fragShaderSource = `
-    #extension GL_OES_standard_derivatives : enable
-
-    #ifdef GL_ES
-    precision highp float;
-    #endif
-
-    varying vec2 v_bezier;
-    varying float v_curve;
-    varying vec4 v_color;
-
-    void main(void) {
-        vec2 px = dFdx(v_bezier);
-        vec2 py = dFdy(v_bezier);
-        float fx = 2.0 * v_bezier.x * px.x - px.y;
-        float fy = 2.0 * v_bezier.y * py.x - py.y;
-        float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);
-        float alpha = clamp((0.5 - sd), 0.0, v_color.w);
-        gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);
-    }
-`
-
 type pane struct { // pane type hidden, call pane.New() to create pane
     console *js.Object // browser console to log to
 
@@ -57,7 +15,7 @@ type pane struct { // pane type hidden, call pane.New() to create pane
     gl *webgl.Context
     width, height int
     zoom, pan []float32
-    transform mgl32.Mat3
+    transform, untransform mgl32.Mat3
 
     shader *js.Object  // gl.shader
     uTransform *js.Object // uniform shader variables
@@ -69,7 +27,7 @@ type pane struct { // pane type hidden, call pane.New() to create pane
     meshPipe chan []mesh.Mesh
     zoomPipe, panPipe chan []float32
 
-    //PointerPipe chan PointerEvent
+    PointerPipe chan PointerEvent
     //KeyPipe chan KeyEvent
 }
 
@@ -113,87 +71,12 @@ func New() *pane {
     self.meshPipe = make(chan []mesh.Mesh)
     self.zoomPipe = make(chan []float32)
     self.panPipe = make(chan []float32)
+    self.PointerPipe = make(chan PointerEvent, 256)
 
     // start event loop as goroutine
     go self.loop()
 
     return self
-}
-
-func (self *pane) loop() {
-
-    // set callbacks
-    self.window.Call(
-        "addEventListener", "resize", 
-        func() {
-            select { // nonblocking attempt to signal resize channel
-            case self.resizePipe <- true:
-            default:
-            }
-        },
-    )
-
-    // set initial resolution
-    self.SetResolution()
-
-    for { // loop and listen to input channels
-        select {
-
-        case <- self.resizePipe:
-            self.SetResolution()
-            self.draw()
-
-        case mshdff := <- self.meshPipe: // buffer new meshes then redraw
-            for _, msh := range mshdff {
-                if msh.Trngls == nil { // delete meshes with no triangles
-                    self.DeleteMesh(msh)
-                } else {
-                    self.BuffMesh(msh)
-                }
-            }
-            self.draw()
-
-        case zm := <- self.zoomPipe:
-            self.zoom = zm[:2]
-            self.setTransform()
-
-        case pan := <- self.panPipe:
-            self.pan = pan[:2]
-            self.setTransform()
-        }
-    }
-}
-
-func (self *pane) initShaders() {
-
-    // enable gl flags
-    self.gl.GetExtension("OES_standard_derivatives")
-
-    // init shader
-    self.shader = self.gl.CreateProgram()
-    //self.Log(vertexShaderSource)
-    //self.Log(fragShaderSource)
-    vertexShader := self.getShader(self.gl.VERTEX_SHADER, vertexShaderSource)
-    fragShader := self.getShader(self.gl.FRAGMENT_SHADER, fragShaderSource)
-    self.gl.AttachShader(self.shader, vertexShader)
-    self.gl.AttachShader(self.shader, fragShader)
-    self.gl.LinkProgram(self.shader)
-    if !self.gl.GetProgramParameterb(self.shader, self.gl.LINK_STATUS) {
-        self.Log("couldnt init shaders :(")
-    }
-    self.gl.UseProgram(self.shader)
-
-    // get gl shader variables
-    self.aVertex = self.gl.GetAttribLocation(self.shader, "a_vertex")
-    self.gl.EnableVertexAttribArray(self.aVertex)
-    self.aBezier = self.gl.GetAttribLocation(self.shader, "a_bezier")
-    self.gl.EnableVertexAttribArray(self.aBezier)
-    self.aCurve = self.gl.GetAttribLocation(self.shader, "a_curve")
-    self.gl.EnableVertexAttribArray(self.aCurve)
-    self.aColor = self.gl.GetAttribLocation(self.shader, "a_color")
-    self.gl.EnableVertexAttribArray(self.aColor)
-
-    self.uTransform = self.gl.GetUniformLocation(self.shader, "u_transform")
 }
 
 func (self *pane) Log(msg string) {
@@ -206,18 +89,6 @@ func (self *pane) SetZoom(x, y float32) {
 
 func (self *pane) SetPan(x, y float32) {
     self.panPipe <- []float32{float32(x), float32(y)}
-}
-
-func (self *pane) getShader(typ int, src string) (shader *js.Object) {
-    shader = self.gl.CreateShader(typ)
-    self.gl.ShaderSource(shader, src)
-    self.gl.CompileShader(shader)
-    
-    if !self.gl.GetShaderParameter(shader, self.gl.COMPILE_STATUS).Bool() {
-        self.Log(self.gl.GetShaderInfoLog(shader))
-        return nil
-    }
-    return shader
 }
 
 func (self *pane) SetResolution() {
@@ -249,6 +120,8 @@ func (self *pane) Draw(mshdff ...mesh.Mesh) {
 }
 
 func (self *pane) setTransform() {
+
+    // generate transform matrix to convert to (zoomed & panned) pixel space
     m := mgl32.Translate2D(-1.0, -1.0) // move origin to corner
     zm := mgl32.Scale2D(
         self.zoom[0] * 2.0 / float32(self.width), 
@@ -256,6 +129,11 @@ func (self *pane) setTransform() {
     pm := mgl32.Translate2D(self.pan[0], self.pan[1])
     m = m.Mul3(zm)
     self.transform = m.Mul3(pm)
+
+    // generate untransform from pixel space to unzoomed & unpanned mesh space
+    upm := mgl32.Translate2D(-self.pan[0], -self.pan[1])
+    uzm := mgl32.Scale2D(1.0 / self.zoom[0], 1.0 / self.zoom[1])
+    self.untransform = upm.Mul3(uzm)
     
     t := []float32{}
     for _, s := range self.transform {

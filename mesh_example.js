@@ -2837,6 +2837,130 @@ $packages["io"] = (function() {
 	$pkg.$init = $init;
 	return $pkg;
 })();
+$packages["math"] = (function() {
+	var $pkg = {}, $init, js, arrayType, arrayType$1, arrayType$2, structType, arrayType$3, math, zero, posInf, negInf, nan, buf, pow10tab, Hypot, Inf, IsInf, IsNaN, NaN, Sqrt, init, Float32bits, Float64bits, hypot, init$1;
+	js = $packages["github.com/gopherjs/gopherjs/js"];
+	arrayType = $arrayType($Uint32, 2);
+	arrayType$1 = $arrayType($Float32, 2);
+	arrayType$2 = $arrayType($Float64, 1);
+	structType = $structType([{prop: "uint32array", name: "uint32array", pkg: "math", typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", pkg: "math", typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", pkg: "math", typ: arrayType$2, tag: ""}]);
+	arrayType$3 = $arrayType($Float64, 70);
+	Hypot = function(p, q) {
+		var $ptr, p, q;
+		return hypot(p, q);
+	};
+	$pkg.Hypot = Hypot;
+	Inf = function(sign) {
+		var $ptr, sign;
+		if (sign >= 0) {
+			return posInf;
+		} else {
+			return negInf;
+		}
+	};
+	$pkg.Inf = Inf;
+	IsInf = function(f, sign) {
+		var $ptr, f, sign;
+		if (f === posInf) {
+			return sign >= 0;
+		}
+		if (f === negInf) {
+			return sign <= 0;
+		}
+		return false;
+	};
+	$pkg.IsInf = IsInf;
+	IsNaN = function(f) {
+		var $ptr, f, is;
+		is = false;
+		is = !((f === f));
+		return is;
+	};
+	$pkg.IsNaN = IsNaN;
+	NaN = function() {
+		var $ptr;
+		return nan;
+	};
+	$pkg.NaN = NaN;
+	Sqrt = function(x) {
+		var $ptr, x;
+		return $parseFloat(math.sqrt(x));
+	};
+	$pkg.Sqrt = Sqrt;
+	init = function() {
+		var $ptr, ab;
+		ab = new ($global.ArrayBuffer)(8);
+		buf.uint32array = new ($global.Uint32Array)(ab);
+		buf.float32array = new ($global.Float32Array)(ab);
+		buf.float64array = new ($global.Float64Array)(ab);
+	};
+	Float32bits = function(f) {
+		var $ptr, f;
+		buf.float32array[0] = f;
+		return buf.uint32array[0];
+	};
+	$pkg.Float32bits = Float32bits;
+	Float64bits = function(f) {
+		var $ptr, f, x, x$1;
+		buf.float64array[0] = f;
+		return (x = $shiftLeft64(new $Uint64(0, buf.uint32array[1]), 32), x$1 = new $Uint64(0, buf.uint32array[0]), new $Uint64(x.$high + x$1.$high, x.$low + x$1.$low));
+	};
+	$pkg.Float64bits = Float64bits;
+	hypot = function(p, q) {
+		var $ptr, _tmp, _tmp$1, p, q;
+		if (IsInf(p, 0) || IsInf(q, 0)) {
+			return Inf(1);
+		} else if (IsNaN(p) || IsNaN(q)) {
+			return NaN();
+		}
+		if (p < 0) {
+			p = -p;
+		}
+		if (q < 0) {
+			q = -q;
+		}
+		if (p < q) {
+			_tmp = q;
+			_tmp$1 = p;
+			p = _tmp;
+			q = _tmp$1;
+		}
+		if (p === 0) {
+			return 0;
+		}
+		q = q / p;
+		return p * Sqrt(1 + q * q);
+	};
+	init$1 = function() {
+		var $ptr, _q, i, m, x;
+		pow10tab[0] = 1;
+		pow10tab[1] = 10;
+		i = 2;
+		while (true) {
+			if (!(i < 70)) { break; }
+			m = (_q = i / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"));
+			((i < 0 || i >= pow10tab.length) ? $throwRuntimeError("index out of range") : pow10tab[i] = ((m < 0 || m >= pow10tab.length) ? $throwRuntimeError("index out of range") : pow10tab[m]) * (x = i - m >> 0, ((x < 0 || x >= pow10tab.length) ? $throwRuntimeError("index out of range") : pow10tab[x])));
+			i = i + (1) >> 0;
+		}
+	};
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		buf = new structType.ptr(arrayType.zero(), arrayType$1.zero(), arrayType$2.zero());
+		pow10tab = arrayType$3.zero();
+		math = $global.Math;
+		zero = 0;
+		posInf = 1 / zero;
+		negInf = -1 / zero;
+		nan = 0 / zero;
+		init();
+		init$1();
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
 $packages["unicode"] = (function() {
 	var $pkg = {}, $init;
 	$init = function() {
@@ -3819,130 +3943,6 @@ $packages["bytes"] = (function() {
 		$r = unicode.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = utf8.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.ErrTooLarge = errors.New("bytes.Buffer: too large");
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
-$packages["math"] = (function() {
-	var $pkg = {}, $init, js, arrayType, arrayType$1, arrayType$2, structType, arrayType$3, math, zero, posInf, negInf, nan, buf, pow10tab, Hypot, Inf, IsInf, IsNaN, NaN, Sqrt, init, Float32bits, Float64bits, hypot, init$1;
-	js = $packages["github.com/gopherjs/gopherjs/js"];
-	arrayType = $arrayType($Uint32, 2);
-	arrayType$1 = $arrayType($Float32, 2);
-	arrayType$2 = $arrayType($Float64, 1);
-	structType = $structType([{prop: "uint32array", name: "uint32array", pkg: "math", typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", pkg: "math", typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", pkg: "math", typ: arrayType$2, tag: ""}]);
-	arrayType$3 = $arrayType($Float64, 70);
-	Hypot = function(p, q) {
-		var $ptr, p, q;
-		return hypot(p, q);
-	};
-	$pkg.Hypot = Hypot;
-	Inf = function(sign) {
-		var $ptr, sign;
-		if (sign >= 0) {
-			return posInf;
-		} else {
-			return negInf;
-		}
-	};
-	$pkg.Inf = Inf;
-	IsInf = function(f, sign) {
-		var $ptr, f, sign;
-		if (f === posInf) {
-			return sign >= 0;
-		}
-		if (f === negInf) {
-			return sign <= 0;
-		}
-		return false;
-	};
-	$pkg.IsInf = IsInf;
-	IsNaN = function(f) {
-		var $ptr, f, is;
-		is = false;
-		is = !((f === f));
-		return is;
-	};
-	$pkg.IsNaN = IsNaN;
-	NaN = function() {
-		var $ptr;
-		return nan;
-	};
-	$pkg.NaN = NaN;
-	Sqrt = function(x) {
-		var $ptr, x;
-		return $parseFloat(math.sqrt(x));
-	};
-	$pkg.Sqrt = Sqrt;
-	init = function() {
-		var $ptr, ab;
-		ab = new ($global.ArrayBuffer)(8);
-		buf.uint32array = new ($global.Uint32Array)(ab);
-		buf.float32array = new ($global.Float32Array)(ab);
-		buf.float64array = new ($global.Float64Array)(ab);
-	};
-	Float32bits = function(f) {
-		var $ptr, f;
-		buf.float32array[0] = f;
-		return buf.uint32array[0];
-	};
-	$pkg.Float32bits = Float32bits;
-	Float64bits = function(f) {
-		var $ptr, f, x, x$1;
-		buf.float64array[0] = f;
-		return (x = $shiftLeft64(new $Uint64(0, buf.uint32array[1]), 32), x$1 = new $Uint64(0, buf.uint32array[0]), new $Uint64(x.$high + x$1.$high, x.$low + x$1.$low));
-	};
-	$pkg.Float64bits = Float64bits;
-	hypot = function(p, q) {
-		var $ptr, _tmp, _tmp$1, p, q;
-		if (IsInf(p, 0) || IsInf(q, 0)) {
-			return Inf(1);
-		} else if (IsNaN(p) || IsNaN(q)) {
-			return NaN();
-		}
-		if (p < 0) {
-			p = -p;
-		}
-		if (q < 0) {
-			q = -q;
-		}
-		if (p < q) {
-			_tmp = q;
-			_tmp$1 = p;
-			p = _tmp;
-			q = _tmp$1;
-		}
-		if (p === 0) {
-			return 0;
-		}
-		q = q / p;
-		return p * Sqrt(1 + q * q);
-	};
-	init$1 = function() {
-		var $ptr, _q, i, m, x;
-		pow10tab[0] = 1;
-		pow10tab[1] = 10;
-		i = 2;
-		while (true) {
-			if (!(i < 70)) { break; }
-			m = (_q = i / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"));
-			((i < 0 || i >= pow10tab.length) ? $throwRuntimeError("index out of range") : pow10tab[i] = ((m < 0 || m >= pow10tab.length) ? $throwRuntimeError("index out of range") : pow10tab[m]) * (x = i - m >> 0, ((x < 0 || x >= pow10tab.length) ? $throwRuntimeError("index out of range") : pow10tab[x])));
-			i = i + (1) >> 0;
-		}
-	};
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		buf = new structType.ptr(arrayType.zero(), arrayType$1.zero(), arrayType$2.zero());
-		pow10tab = arrayType$3.zero();
-		math = $global.Math;
-		zero = 0;
-		posInf = 1 / zero;
-		negInf = -1 / zero;
-		nan = 0 / zero;
-		init();
-		init$1();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -13943,7 +13943,7 @@ $packages["reflect"] = (function() {
 	return $pkg;
 })();
 $packages["fmt"] = (function() {
-	var $pkg = {}, $init, errors, io, math, os, reflect, strconv, sync, utf8, fmtFlags, fmt, State, Formatter, Stringer, GoStringer, buffer, pp, runeUnreader, scanError, ss, ssave, sliceType, sliceType$1, ptrType, arrayType, arrayType$1, ptrType$1, arrayType$2, sliceType$2, ptrType$2, ptrType$5, ptrType$25, funcType, padZeroBytes, padSpaceBytes, trueBytes, falseBytes, commaSpaceBytes, nilAngleBytes, nilParenBytes, nilBytes, mapBytes, percentBangBytes, missingBytes, badIndexBytes, panicBytes, extraBytes, irparenBytes, bytesBytes, badWidthBytes, badPrecBytes, noVerbBytes, ppFree, intBits, uintptrBits, byteType, space, ssFree, complexError, boolError, _r, _r$1, init, doPrec, newPrinter, Fprintf, Fprintln, getField, tooLarge, parsenum, intFromArg, parseArgNumber, isSpace, notSpace, indexRune;
+	var $pkg = {}, $init, errors, io, math, os, reflect, strconv, sync, utf8, fmtFlags, fmt, State, Formatter, Stringer, GoStringer, buffer, pp, runeUnreader, scanError, ss, ssave, sliceType, sliceType$1, ptrType, arrayType, arrayType$1, ptrType$1, arrayType$2, sliceType$2, ptrType$2, ptrType$5, ptrType$25, funcType, padZeroBytes, padSpaceBytes, trueBytes, falseBytes, commaSpaceBytes, nilAngleBytes, nilParenBytes, nilBytes, mapBytes, percentBangBytes, missingBytes, badIndexBytes, panicBytes, extraBytes, irparenBytes, bytesBytes, badWidthBytes, badPrecBytes, noVerbBytes, ppFree, intBits, uintptrBits, byteType, space, ssFree, complexError, boolError, _r, _r$1, init, doPrec, newPrinter, Fprintf, Sprintf, Fprintln, getField, tooLarge, parsenum, intFromArg, parseArgNumber, isSpace, notSpace, indexRune;
 	errors = $packages["errors"];
 	io = $packages["io"];
 	math = $packages["math"];
@@ -14769,6 +14769,18 @@ $packages["fmt"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: Fprintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._tuple = _tuple; $f.a = a; $f.err = err; $f.format = format; $f.n = n; $f.p = p; $f.w = w; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Fprintf = Fprintf;
+	Sprintf = function(format, a) {
+		var $ptr, _r$2, a, format, p, s, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; a = $f.a; format = $f.format; p = $f.p; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r$2 = newPrinter(); /* */ $s = 1; case 1: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		p = _r$2;
+		$r = p.doPrintf(format, a); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		s = $bytesToString(p.buf);
+		p.free();
+		return s;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Sprintf }; } $f.$ptr = $ptr; $f._r$2 = _r$2; $f.a = a; $f.format = format; $f.p = p; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.Sprintf = Sprintf;
 	Fprintln = function(w, a) {
 		var $ptr, _r$2, _r$3, _tuple, a, err, n, p, w, x, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$2 = $f._r$2; _r$3 = $f._r$3; _tuple = $f._tuple; a = $f.a; err = $f.err; n = $f.n; p = $f.p; w = $f.w; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -21705,12 +21717,23 @@ $packages["sort"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/philetus/flyspek/pane"] = (function() {
-	var $pkg = {}, $init, mgl32, js, webgl, mesh, sort, glbuff, byDepth, pane, sliceType, ptrType, sliceType$1, ptrType$1, arrayType, ptrType$2, sliceType$2, funcType, sliceType$3, ptrType$3, mapType, chanType, chanType$1, chanType$2, bezier_texture, fill_texture, fill_curve, convex_curve, concave_curve, New;
+	var $pkg = {}, $init, mgl32, js, webgl, mesh, sort, EventFlavor, PointerEvent, glbuff, byDepth, pane, sliceType, funcType, arrayType, ptrType, funcType$1, sliceType$1, ptrType$1, sliceType$2, ptrType$2, arrayType$1, ptrType$3, sliceType$3, mapType, chanType, chanType$1, chanType$2, chanType$3, bezier_texture, fill_texture, fill_curve, convex_curve, concave_curve, New;
 	mgl32 = $packages["github.com/go-gl/mathgl/mgl32"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	webgl = $packages["github.com/gopherjs/webgl"];
 	mesh = $packages["github.com/philetus/flyspek/mesh"];
 	sort = $packages["sort"];
+	EventFlavor = $pkg.EventFlavor = $newType(4, $kindInt, "pane.EventFlavor", "EventFlavor", "github.com/philetus/flyspek/pane", null);
+	PointerEvent = $pkg.PointerEvent = $newType(0, $kindStruct, "pane.PointerEvent", "PointerEvent", "github.com/philetus/flyspek/pane", function(Flvr_, Pos_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Flvr = 0;
+			this.Pos = arrayType.zero();
+			return;
+		}
+		this.Flvr = Flvr_;
+		this.Pos = Pos_;
+	});
 	glbuff = $pkg.glbuff = $newType(0, $kindStruct, "pane.glbuff", "glbuff", "github.com/philetus/flyspek/pane", function(nmbr_, dpth_, lngth_, vrts_, txtrs_, crvs_, clrs_) {
 		this.$val = this;
 		if (arguments.length === 0) {
@@ -21732,19 +21755,20 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		this.clrs = clrs_;
 	});
 	byDepth = $pkg.byDepth = $newType(12, $kindSlice, "pane.byDepth", "byDepth", "github.com/philetus/flyspek/pane", null);
-	pane = $pkg.pane = $newType(0, $kindStruct, "pane.pane", "pane", "github.com/philetus/flyspek/pane", function(console_, window_, document_, canvas_, gl_, width_, height_, zoom_, pan_, transform_, shader_, uTransform_, aVertex_, aBezier_, aCurve_, aColor_, meshdeks_, resizePipe_, meshPipe_, zoomPipe_, panPipe_) {
+	pane = $pkg.pane = $newType(0, $kindStruct, "pane.pane", "pane", "github.com/philetus/flyspek/pane", function(console_, window_, document_, canvas_, gl_, width_, height_, zoom_, pan_, transform_, untransform_, shader_, uTransform_, aVertex_, aBezier_, aCurve_, aColor_, meshdeks_, resizePipe_, meshPipe_, zoomPipe_, panPipe_, PointerPipe_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.console = null;
 			this.window = null;
 			this.document = null;
 			this.canvas = null;
-			this.gl = ptrType$1.nil;
+			this.gl = ptrType$2.nil;
 			this.width = 0;
 			this.height = 0;
 			this.zoom = sliceType.nil;
 			this.pan = sliceType.nil;
-			this.transform = arrayType.zero();
+			this.transform = arrayType$1.zero();
+			this.untransform = arrayType$1.zero();
 			this.shader = null;
 			this.uTransform = null;
 			this.aVertex = 0;
@@ -21756,6 +21780,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 			this.meshPipe = $chanNil;
 			this.zoomPipe = $chanNil;
 			this.panPipe = $chanNil;
+			this.PointerPipe = $chanNil;
 			return;
 		}
 		this.console = console_;
@@ -21768,6 +21793,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		this.zoom = zoom_;
 		this.pan = pan_;
 		this.transform = transform_;
+		this.untransform = untransform_;
 		this.shader = shader_;
 		this.uTransform = uTransform_;
 		this.aVertex = aVertex_;
@@ -21779,28 +21805,127 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		this.meshPipe = meshPipe_;
 		this.zoomPipe = zoomPipe_;
 		this.panPipe = panPipe_;
+		this.PointerPipe = PointerPipe_;
 	});
 	sliceType = $sliceType($Float32);
-	ptrType = $ptrType(glbuff);
-	sliceType$1 = $sliceType(ptrType);
-	ptrType$1 = $ptrType(webgl.Context);
-	arrayType = $arrayType($Float32, 9);
-	ptrType$2 = $ptrType(pane);
-	sliceType$2 = $sliceType(mesh.Mesh);
 	funcType = $funcType([], [], false);
-	sliceType$3 = $sliceType(mesh.Triangle);
-	ptrType$3 = $ptrType(js.Object);
-	mapType = $mapType(mesh.Number, ptrType);
+	arrayType = $arrayType($Float32, 2);
+	ptrType = $ptrType(js.Object);
+	funcType$1 = $funcType([ptrType], [], false);
+	sliceType$1 = $sliceType(mesh.Triangle);
+	ptrType$1 = $ptrType(glbuff);
+	sliceType$2 = $sliceType(ptrType$1);
+	ptrType$2 = $ptrType(webgl.Context);
+	arrayType$1 = $arrayType($Float32, 9);
+	ptrType$3 = $ptrType(pane);
+	sliceType$3 = $sliceType(mesh.Mesh);
+	mapType = $mapType(mesh.Number, ptrType$1);
 	chanType = $chanType($Bool, false, false);
-	chanType$1 = $chanType(sliceType$2, false, false);
+	chanType$1 = $chanType(sliceType$3, false, false);
 	chanType$2 = $chanType(sliceType, false, false);
+	chanType$3 = $chanType(PointerEvent, false, false);
+	pane.ptr.prototype.pix2Vec = function(evnt) {
+		var $ptr, evnt, self, v;
+		self = this;
+		v = $toNativeArray($kindFloat32, [$fround($parseFloat(evnt.clientX)), $fround($parseFloat(evnt.clientY)), 1]);
+		$copy(v, new mgl32.Mat3(self.untransform).Mul3x1(v), mgl32.Vec3);
+		return new mgl32.Vec3(v).Vec2();
+	};
+	pane.prototype.pix2Vec = function(evnt) { return this.$val.pix2Vec(evnt); };
+	pane.ptr.prototype.loop = function() {
+		var $ptr, _i, _r, _ref, _selection, msh, mshdff, pan, self, zm, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; _selection = $f._selection; msh = $f.msh; mshdff = $f.mshdff; pan = $f.pan; self = $f.self; zm = $f.zm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		self = [self];
+		self[0] = this;
+		self[0].window.addEventListener($externalize("resize", $String), $externalize((function(self) { return function $b() {
+			var $ptr, _selection, $r;
+			/* */ var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _selection = $f._selection; $r = $f.$r; }
+			_selection = $select([[self[0].resizePipe, true], []]);
+			if (_selection[0] === 0) {
+			} else if (_selection[0] === 1) {
+			}
+			/* */ if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._selection = _selection; $f.$r = $r; return $f;
+		}; })(self), funcType));
+		self[0].document.addEventListener($externalize("mousedown", $String), $externalize((function(self) { return function $b(evnt) {
+			var $ptr, _selection, evnt, pe, $r;
+			/* */ var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _selection = $f._selection; evnt = $f.evnt; pe = $f.pe; $r = $f.$r; }
+			pe = new PointerEvent.ptr(0, $clone(self[0].pix2Vec(evnt), mgl32.Vec2));
+			_selection = $select([[self[0].PointerPipe, $clone(pe, PointerEvent)], []]);
+			if (_selection[0] === 0) {
+			} else if (_selection[0] === 1) {
+			}
+			/* */ if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._selection = _selection; $f.evnt = evnt; $f.pe = pe; $f.$r = $r; return $f;
+		}; })(self), funcType$1));
+		self[0].document.addEventListener($externalize("mouseup", $String), $externalize((function(self) { return function $b(evnt) {
+			var $ptr, _selection, evnt, pe, $r;
+			/* */ var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _selection = $f._selection; evnt = $f.evnt; pe = $f.pe; $r = $f.$r; }
+			pe = new PointerEvent.ptr(1, $clone(self[0].pix2Vec(evnt), mgl32.Vec2));
+			_selection = $select([[self[0].PointerPipe, $clone(pe, PointerEvent)], []]);
+			if (_selection[0] === 0) {
+			} else if (_selection[0] === 1) {
+			}
+			/* */ if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._selection = _selection; $f.evnt = evnt; $f.pe = pe; $f.$r = $r; return $f;
+		}; })(self), funcType$1));
+		self[0].document.addEventListener($externalize("mousemove", $String), $externalize((function(self) { return function $b(evnt) {
+			var $ptr, _selection, evnt, pe, $r;
+			/* */ var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _selection = $f._selection; evnt = $f.evnt; pe = $f.pe; $r = $f.$r; }
+			pe = new PointerEvent.ptr(2, $clone(self[0].pix2Vec(evnt), mgl32.Vec2));
+			_selection = $select([[self[0].PointerPipe, $clone(pe, PointerEvent)], []]);
+			if (_selection[0] === 0) {
+			} else if (_selection[0] === 1) {
+			}
+			/* */ if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._selection = _selection; $f.evnt = evnt; $f.pe = pe; $f.$r = $r; return $f;
+		}; })(self), funcType$1));
+		self[0].SetResolution();
+		/* while (true) { */ case 1:
+			_r = $select([[self[0].resizePipe], [self[0].meshPipe], [self[0].zoomPipe], [self[0].panPipe]]); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_selection = _r;
+			/* */ if (_selection[0] === 0) { $s = 4; continue; }
+			/* */ if (_selection[0] === 1) { $s = 5; continue; }
+			/* */ if (_selection[0] === 2) { $s = 6; continue; }
+			/* */ if (_selection[0] === 3) { $s = 7; continue; }
+			/* */ $s = 8; continue;
+			/* if (_selection[0] === 0) { */ case 4:
+				self[0].SetResolution();
+				$r = self[0].draw(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$s = 8; continue;
+			/* } else if (_selection[0] === 1) { */ case 5:
+				mshdff = _selection[1][0];
+				_ref = mshdff;
+				_i = 0;
+				while (true) {
+					if (!(_i < _ref.$length)) { break; }
+					msh = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mesh.Mesh);
+					if (msh.Trngls === sliceType$1.nil) {
+						self[0].DeleteMesh(msh);
+					} else {
+						self[0].BuffMesh(msh);
+					}
+					_i++;
+				}
+				$r = self[0].draw(); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$s = 8; continue;
+			/* } else if (_selection[0] === 2) { */ case 6:
+				zm = _selection[1][0];
+				self[0].zoom = $subslice(zm, 0, 2);
+				self[0].setTransform();
+				$s = 8; continue;
+			/* } else if (_selection[0] === 3) { */ case 7:
+				pan = _selection[1][0];
+				self[0].pan = $subslice(pan, 0, 2);
+				self[0].setTransform();
+			/* } */ case 8:
+		/* } */ $s = 1; continue; case 2:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pane.ptr.prototype.loop }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._selection = _selection; $f.msh = msh; $f.mshdff = mshdff; $f.pan = pan; $f.self = self; $f.zm = zm; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	pane.prototype.loop = function() { return this.$val.loop(); };
 	pane.ptr.prototype.BuffMesh = function(msh) {
 		var $ptr, _entry, _i, _key, _ref, _ref$1, _tuple, bff, clrs, crvs, msh, ok, self, trngl, txtrs, vrts;
 		msh = $clone(msh, mesh.Mesh);
 		self = this;
-		bff = ptrType.nil;
+		bff = ptrType$1.nil;
 		ok = false;
-		_tuple = (_entry = self.meshdeks[mesh.Number.keyFor(msh.Nmbr)], _entry !== undefined ? [_entry.v, true] : [ptrType.nil, false]);
+		_tuple = (_entry = self.meshdeks[mesh.Number.keyFor(msh.Nmbr)], _entry !== undefined ? [_entry.v, true] : [ptrType$1.nil, false]);
 		bff = _tuple[0];
 		ok = _tuple[1];
 		if (!ok) {
@@ -21869,12 +21994,6 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		self.gl.DrawArrays($parseInt(self.gl.Object.TRIANGLES) >> 0, 0, bff.lngth);
 	};
 	pane.prototype.drawBuff = function(bff) { return this.$val.drawBuff(bff); };
-	pane.ptr.prototype.DropBuff = function(nmbr) {
-		var $ptr, nmbr, self;
-		self = this;
-		delete self.meshdeks[mesh.Number.keyFor(nmbr)];
-	};
-	pane.prototype.DropBuff = function(nmbr) { return this.$val.DropBuff(nmbr); };
 	byDepth.prototype.Len = function() {
 		var $ptr, d;
 		d = this;
@@ -21900,7 +22019,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		var $ptr, _entry, _i, _keys, _ref, bff, bffs, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _entry = $f._entry; _i = $f._i; _keys = $f._keys; _ref = $f._ref; bff = $f.bff; bffs = $f.bffs; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		self = this;
-		bffs = $makeSlice(sliceType$1, 0, $keys(self.meshdeks).length);
+		bffs = $makeSlice(sliceType$2, 0, $keys(self.meshdeks).length);
 		_ref = self.meshdeks;
 		_i = 0;
 		_keys = $keys(_ref);
@@ -21923,7 +22042,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	New = function() {
 		var $ptr, _r, _tuple, attrs, err, gl, self, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; attrs = $f.attrs; err = $f.err; gl = $f.gl; self = $f.self; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		self = new pane.ptr(null, null, null, null, ptrType$1.nil, 0, 0, sliceType.nil, sliceType.nil, arrayType.zero(), null, null, 0, 0, 0, 0, false, $chanNil, $chanNil, $chanNil, $chanNil);
+		self = new pane.ptr(null, null, null, null, ptrType$2.nil, 0, 0, sliceType.nil, sliceType.nil, arrayType$1.zero(), arrayType$1.zero(), null, null, 0, 0, 0, 0, false, $chanNil, $chanNil, $chanNil, $chanNil, $chanNil);
 		self.meshdeks = {};
 		self.zoom = new sliceType([1, 1]);
 		self.pan = new sliceType([0, 0]);
@@ -21943,103 +22062,22 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 1:
 			_r = err.Error(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 			$r = self.Log("error: " + _r); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			return ptrType$2.nil;
+			return ptrType$3.nil;
 		/* } */ case 2:
 		self.gl = gl;
 		self.initShaders();
 		self.gl.BlendFuncSeparate($parseInt(self.gl.Object.SRC_ALPHA) >> 0, $parseInt(self.gl.Object.ONE_MINUS_SRC_ALPHA) >> 0, $parseInt(self.gl.Object.ZERO) >> 0, $parseInt(self.gl.Object.ONE) >> 0);
 		self.gl.Enable($parseInt(self.gl.Object.BLEND) >> 0);
 		self.resizePipe = new $Chan($Bool, 1);
-		self.meshPipe = new $Chan(sliceType$2, 0);
+		self.meshPipe = new $Chan(sliceType$3, 0);
 		self.zoomPipe = new $Chan(sliceType, 0);
 		self.panPipe = new $Chan(sliceType, 0);
+		self.PointerPipe = new $Chan(PointerEvent, 256);
 		$go($methodVal(self, "loop"), []);
 		return self;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: New }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.attrs = attrs; $f.err = err; $f.gl = gl; $f.self = self; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.New = New;
-	pane.ptr.prototype.loop = function() {
-		var $ptr, _i, _r, _ref, _selection, msh, mshdff, pan, self, zm, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _i = $f._i; _r = $f._r; _ref = $f._ref; _selection = $f._selection; msh = $f.msh; mshdff = $f.mshdff; pan = $f.pan; self = $f.self; zm = $f.zm; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		self = [self];
-		self[0] = this;
-		self[0].window.addEventListener($externalize("resize", $String), $externalize((function(self) { return function $b() {
-			var $ptr, _selection, $r;
-			/* */ var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _selection = $f._selection; $r = $f.$r; }
-			_selection = $select([[self[0].resizePipe, true], []]);
-			if (_selection[0] === 0) {
-			} else if (_selection[0] === 1) {
-			}
-			/* */ if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._selection = _selection; $f.$r = $r; return $f;
-		}; })(self), funcType));
-		self[0].SetResolution();
-		/* while (true) { */ case 1:
-			_r = $select([[self[0].resizePipe], [self[0].meshPipe], [self[0].zoomPipe], [self[0].panPipe]]); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			_selection = _r;
-			/* */ if (_selection[0] === 0) { $s = 4; continue; }
-			/* */ if (_selection[0] === 1) { $s = 5; continue; }
-			/* */ if (_selection[0] === 2) { $s = 6; continue; }
-			/* */ if (_selection[0] === 3) { $s = 7; continue; }
-			/* */ $s = 8; continue;
-			/* if (_selection[0] === 0) { */ case 4:
-				self[0].SetResolution();
-				$r = self[0].draw(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$s = 8; continue;
-			/* } else if (_selection[0] === 1) { */ case 5:
-				mshdff = _selection[1][0];
-				_ref = mshdff;
-				_i = 0;
-				while (true) {
-					if (!(_i < _ref.$length)) { break; }
-					msh = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mesh.Mesh);
-					if (msh.Trngls === sliceType$3.nil) {
-						self[0].DeleteMesh(msh);
-					} else {
-						self[0].BuffMesh(msh);
-					}
-					_i++;
-				}
-				$r = self[0].draw(); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$s = 8; continue;
-			/* } else if (_selection[0] === 2) { */ case 6:
-				zm = _selection[1][0];
-				self[0].zoom = $subslice(zm, 0, 2);
-				self[0].setTransform();
-				$s = 8; continue;
-			/* } else if (_selection[0] === 3) { */ case 7:
-				pan = _selection[1][0];
-				self[0].pan = $subslice(pan, 0, 2);
-				self[0].setTransform();
-			/* } */ case 8:
-		/* } */ $s = 1; continue; case 2:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pane.ptr.prototype.loop }; } $f.$ptr = $ptr; $f._i = _i; $f._r = _r; $f._ref = _ref; $f._selection = _selection; $f.msh = msh; $f.mshdff = mshdff; $f.pan = pan; $f.self = self; $f.zm = zm; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	pane.prototype.loop = function() { return this.$val.loop(); };
-	pane.ptr.prototype.initShaders = function() {
-		var $ptr, fragShader, self, vertexShader;
-		self = this;
-		self.gl.GetExtension("OES_standard_derivatives");
-		self.shader = self.gl.CreateProgram();
-		vertexShader = self.getShader($parseInt(self.gl.Object.VERTEX_SHADER) >> 0, "\n    attribute vec2 a_vertex;\n    attribute vec2 a_bezier;\n    attribute float a_curve;\n    attribute vec4 a_color;\n\n    uniform mat3 u_transform; // local coordinate transform\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {       \n        vec3 transformed = u_transform * vec3(a_vertex, 1.0);\n        gl_Position = vec4(transformed * vec3(1.0, -1.0, 0.0), 1.0);\n        v_bezier = a_bezier;\n        v_curve = a_curve;\n        v_color = a_color;\n    }\n");
-		fragShader = self.getShader($parseInt(self.gl.Object.FRAGMENT_SHADER) >> 0, "\n    #extension GL_OES_standard_derivatives : enable\n\n    #ifdef GL_ES\n    precision highp float;\n    #endif\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {\n        vec2 px = dFdx(v_bezier);\n        vec2 py = dFdy(v_bezier);\n        float fx = 2.0 * v_bezier.x * px.x - px.y;\n        float fy = 2.0 * v_bezier.y * py.x - py.y;\n        float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);\n        float alpha = clamp((0.5 - sd), 0.0, v_color.w);\n        gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);\n    }\n");
-		self.gl.AttachShader(self.shader, vertexShader);
-		self.gl.AttachShader(self.shader, fragShader);
-		self.gl.LinkProgram(self.shader);
-		if (!self.gl.GetProgramParameterb(self.shader, $parseInt(self.gl.Object.LINK_STATUS) >> 0)) {
-			self.Log("couldnt init shaders :(");
-		}
-		self.gl.UseProgram(self.shader);
-		self.aVertex = self.gl.GetAttribLocation(self.shader, "a_vertex");
-		self.gl.EnableVertexAttribArray(self.aVertex);
-		self.aBezier = self.gl.GetAttribLocation(self.shader, "a_bezier");
-		self.gl.EnableVertexAttribArray(self.aBezier);
-		self.aCurve = self.gl.GetAttribLocation(self.shader, "a_curve");
-		self.gl.EnableVertexAttribArray(self.aCurve);
-		self.aColor = self.gl.GetAttribLocation(self.shader, "a_color");
-		self.gl.EnableVertexAttribArray(self.aColor);
-		self.uTransform = self.gl.GetUniformLocation(self.shader, "u_transform");
-	};
-	pane.prototype.initShaders = function() { return this.$val.initShaders(); };
 	pane.ptr.prototype.Log = function(msg) {
 		var $ptr, msg, self;
 		self = this;
@@ -22062,22 +22100,6 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: pane.ptr.prototype.SetPan }; } $f.$ptr = $ptr; $f.self = self; $f.x = x; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	pane.prototype.SetPan = function(x, y) { return this.$val.SetPan(x, y); };
-	pane.ptr.prototype.getShader = function(typ, src) {
-		var $ptr, self, shader, src, typ;
-		shader = null;
-		self = this;
-		shader = self.gl.CreateShader(typ);
-		self.gl.ShaderSource(shader, src);
-		self.gl.CompileShader(shader);
-		if (!!!(self.gl.GetShaderParameter(shader, $parseInt(self.gl.Object.COMPILE_STATUS) >> 0))) {
-			self.Log(self.gl.GetShaderInfoLog(shader));
-			shader = null;
-			return shader;
-		}
-		shader = shader;
-		return shader;
-	};
-	pane.prototype.getShader = function(typ, src) { return this.$val.getShader(typ, src); };
 	pane.ptr.prototype.SetResolution = function() {
 		var $ptr, self;
 		self = this;
@@ -22118,13 +22140,16 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	};
 	pane.prototype.Draw = function(mshdff) { return this.$val.Draw(mshdff); };
 	pane.ptr.prototype.setTransform = function() {
-		var $ptr, _i, _ref, m, pm, s, self, t, x, x$1, x$2, x$3, zm;
+		var $ptr, _i, _ref, m, pm, s, self, t, upm, uzm, x, x$1, x$2, x$3, x$4, x$5, x$6, x$7, zm;
 		self = this;
 		m = $clone(mgl32.Translate2D(-1, -1), mgl32.Mat3);
 		zm = $clone(mgl32.Scale2D($fround($fround((x = self.zoom, (0 >= x.$length ? $throwRuntimeError("index out of range") : x.$array[x.$offset + 0])) * 2) / self.width), $fround($fround((x$1 = self.zoom, (1 >= x$1.$length ? $throwRuntimeError("index out of range") : x$1.$array[x$1.$offset + 1])) * 2) / self.height)), mgl32.Mat3);
 		pm = $clone(mgl32.Translate2D((x$2 = self.pan, (0 >= x$2.$length ? $throwRuntimeError("index out of range") : x$2.$array[x$2.$offset + 0])), (x$3 = self.pan, (1 >= x$3.$length ? $throwRuntimeError("index out of range") : x$3.$array[x$3.$offset + 1]))), mgl32.Mat3);
 		$copy(m, new mgl32.Mat3(m).Mul3(zm), mgl32.Mat3);
 		$copy(self.transform, new mgl32.Mat3(m).Mul3(pm), mgl32.Mat3);
+		upm = $clone(mgl32.Translate2D(-(x$4 = self.pan, (0 >= x$4.$length ? $throwRuntimeError("index out of range") : x$4.$array[x$4.$offset + 0])), -(x$5 = self.pan, (1 >= x$5.$length ? $throwRuntimeError("index out of range") : x$5.$array[x$5.$offset + 1]))), mgl32.Mat3);
+		uzm = $clone(mgl32.Scale2D($fround(1 / (x$6 = self.zoom, (0 >= x$6.$length ? $throwRuntimeError("index out of range") : x$6.$array[x$6.$offset + 0]))), $fround(1 / (x$7 = self.zoom, (1 >= x$7.$length ? $throwRuntimeError("index out of range") : x$7.$array[x$7.$offset + 1])))), mgl32.Mat3);
+		$copy(self.untransform, new mgl32.Mat3(upm).Mul3(uzm), mgl32.Mat3);
 		t = new sliceType([]);
 		_ref = self.transform;
 		_i = 0;
@@ -22137,11 +22162,53 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 		self.gl.UniformMatrix3fv(self.uTransform, false, t);
 	};
 	pane.prototype.setTransform = function() { return this.$val.setTransform(); };
+	pane.ptr.prototype.initShaders = function() {
+		var $ptr, fragShader, self, vertexShader;
+		self = this;
+		self.gl.GetExtension("OES_standard_derivatives");
+		self.shader = self.gl.CreateProgram();
+		vertexShader = self.getShader($parseInt(self.gl.Object.VERTEX_SHADER) >> 0, "\n    attribute vec2 a_vertex;\n    attribute vec2 a_bezier;\n    attribute float a_curve;\n    attribute vec4 a_color;\n\n    uniform mat3 u_transform; // local coordinate transform\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {       \n        vec3 transformed = u_transform * vec3(a_vertex, 1.0);\n        gl_Position = vec4(transformed * vec3(1.0, -1.0, 0.0), 1.0);\n        v_bezier = a_bezier;\n        v_curve = a_curve;\n        v_color = a_color;\n    }\n");
+		fragShader = self.getShader($parseInt(self.gl.Object.FRAGMENT_SHADER) >> 0, "\n    #extension GL_OES_standard_derivatives : enable\n\n    #ifdef GL_ES\n    precision highp float;\n    #endif\n\n    varying vec2 v_bezier;\n    varying float v_curve;\n    varying vec4 v_color;\n\n    void main(void) {\n        vec2 px = dFdx(v_bezier);\n        vec2 py = dFdy(v_bezier);\n        float fx = 2.0 * v_bezier.x * px.x - px.y;\n        float fy = 2.0 * v_bezier.y * py.x - py.y;\n        float sd = v_curve * (v_bezier.x * v_bezier.x - v_bezier.y) / sqrt(fx * fx + fy * fy);\n        float alpha = clamp((0.5 - sd), 0.0, v_color.w);\n        gl_FragColor = vec4(v_color.x, v_color.y, v_color.z, alpha);\n    }\n");
+		self.gl.AttachShader(self.shader, vertexShader);
+		self.gl.AttachShader(self.shader, fragShader);
+		self.gl.LinkProgram(self.shader);
+		if (!self.gl.GetProgramParameterb(self.shader, $parseInt(self.gl.Object.LINK_STATUS) >> 0)) {
+			self.Log("couldnt init shaders :(");
+		}
+		self.gl.UseProgram(self.shader);
+		self.aVertex = self.gl.GetAttribLocation(self.shader, "a_vertex");
+		self.gl.EnableVertexAttribArray(self.aVertex);
+		self.aBezier = self.gl.GetAttribLocation(self.shader, "a_bezier");
+		self.gl.EnableVertexAttribArray(self.aBezier);
+		self.aCurve = self.gl.GetAttribLocation(self.shader, "a_curve");
+		self.gl.EnableVertexAttribArray(self.aCurve);
+		self.aColor = self.gl.GetAttribLocation(self.shader, "a_color");
+		self.gl.EnableVertexAttribArray(self.aColor);
+		self.uTransform = self.gl.GetUniformLocation(self.shader, "u_transform");
+	};
+	pane.prototype.initShaders = function() { return this.$val.initShaders(); };
+	pane.ptr.prototype.getShader = function(typ, src) {
+		var $ptr, self, shader, src, typ;
+		shader = null;
+		self = this;
+		shader = self.gl.CreateShader(typ);
+		self.gl.ShaderSource(shader, src);
+		self.gl.CompileShader(shader);
+		if (!!!(self.gl.GetShaderParameter(shader, $parseInt(self.gl.Object.COMPILE_STATUS) >> 0))) {
+			self.Log(self.gl.GetShaderInfoLog(shader));
+			shader = null;
+			return shader;
+		}
+		shader = shader;
+		return shader;
+	};
+	pane.prototype.getShader = function(typ, src) { return this.$val.getShader(typ, src); };
 	byDepth.methods = [{prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Swap", name: "Swap", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Less", name: "Less", pkg: "", typ: $funcType([$Int, $Int], [$Bool], false)}];
-	ptrType$2.methods = [{prop: "BuffMesh", name: "BuffMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "DeleteMesh", name: "DeleteMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "drawBuff", name: "drawBuff", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([ptrType], [], false)}, {prop: "DropBuff", name: "DropBuff", pkg: "", typ: $funcType([mesh.Number], [], false)}, {prop: "buffsByDepth", name: "buffsByDepth", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [sliceType$1], false)}, {prop: "loop", name: "loop", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "initShaders", name: "initShaders", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "Log", name: "Log", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetZoom", name: "SetZoom", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "SetPan", name: "SetPan", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "getShader", name: "getShader", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([$Int, $String], [ptrType$3], false)}, {prop: "SetResolution", name: "SetResolution", pkg: "", typ: $funcType([], [], false)}, {prop: "draw", name: "draw", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "Draw", name: "Draw", pkg: "", typ: $funcType([sliceType$2], [], true)}, {prop: "setTransform", name: "setTransform", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}];
-	glbuff.init([{prop: "nmbr", name: "nmbr", pkg: "github.com/philetus/flyspek/pane", typ: mesh.Number, tag: ""}, {prop: "dpth", name: "dpth", pkg: "github.com/philetus/flyspek/pane", typ: $Float32, tag: ""}, {prop: "lngth", name: "lngth", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "vrts", name: "vrts", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "txtrs", name: "txtrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "crvs", name: "crvs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "clrs", name: "clrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}]);
-	byDepth.init(ptrType);
-	pane.init([{prop: "console", name: "console", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "window", name: "window", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "document", name: "document", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "canvas", name: "canvas", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "gl", name: "gl", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$1, tag: ""}, {prop: "width", name: "width", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "height", name: "height", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "zoom", name: "zoom", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "pan", name: "pan", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "transform", name: "transform", pkg: "github.com/philetus/flyspek/pane", typ: mgl32.Mat3, tag: ""}, {prop: "shader", name: "shader", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "uTransform", name: "uTransform", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$3, tag: ""}, {prop: "aVertex", name: "aVertex", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aBezier", name: "aBezier", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aCurve", name: "aCurve", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aColor", name: "aColor", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "meshdeks", name: "meshdeks", pkg: "github.com/philetus/flyspek/pane", typ: mapType, tag: ""}, {prop: "resizePipe", name: "resizePipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType, tag: ""}, {prop: "meshPipe", name: "meshPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$1, tag: ""}, {prop: "zoomPipe", name: "zoomPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$2, tag: ""}, {prop: "panPipe", name: "panPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$2, tag: ""}]);
+	ptrType$3.methods = [{prop: "pix2Vec", name: "pix2Vec", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([ptrType], [mgl32.Vec2], false)}, {prop: "loop", name: "loop", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "BuffMesh", name: "BuffMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "DeleteMesh", name: "DeleteMesh", pkg: "", typ: $funcType([mesh.Mesh], [], false)}, {prop: "drawBuff", name: "drawBuff", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([ptrType$1], [], false)}, {prop: "buffsByDepth", name: "buffsByDepth", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [sliceType$2], false)}, {prop: "Log", name: "Log", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetZoom", name: "SetZoom", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "SetPan", name: "SetPan", pkg: "", typ: $funcType([$Float32, $Float32], [], false)}, {prop: "SetResolution", name: "SetResolution", pkg: "", typ: $funcType([], [], false)}, {prop: "draw", name: "draw", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "Draw", name: "Draw", pkg: "", typ: $funcType([sliceType$3], [], true)}, {prop: "setTransform", name: "setTransform", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "initShaders", name: "initShaders", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([], [], false)}, {prop: "getShader", name: "getShader", pkg: "github.com/philetus/flyspek/pane", typ: $funcType([$Int, $String], [ptrType], false)}];
+	PointerEvent.init([{prop: "Flvr", name: "Flvr", pkg: "", typ: EventFlavor, tag: ""}, {prop: "Pos", name: "Pos", pkg: "", typ: mgl32.Vec2, tag: ""}]);
+	glbuff.init([{prop: "nmbr", name: "nmbr", pkg: "github.com/philetus/flyspek/pane", typ: mesh.Number, tag: ""}, {prop: "dpth", name: "dpth", pkg: "github.com/philetus/flyspek/pane", typ: $Float32, tag: ""}, {prop: "lngth", name: "lngth", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "vrts", name: "vrts", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "txtrs", name: "txtrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "crvs", name: "crvs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "clrs", name: "clrs", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}]);
+	byDepth.init(ptrType$1);
+	pane.init([{prop: "console", name: "console", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "window", name: "window", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "document", name: "document", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "canvas", name: "canvas", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "gl", name: "gl", pkg: "github.com/philetus/flyspek/pane", typ: ptrType$2, tag: ""}, {prop: "width", name: "width", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "height", name: "height", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "zoom", name: "zoom", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "pan", name: "pan", pkg: "github.com/philetus/flyspek/pane", typ: sliceType, tag: ""}, {prop: "transform", name: "transform", pkg: "github.com/philetus/flyspek/pane", typ: mgl32.Mat3, tag: ""}, {prop: "untransform", name: "untransform", pkg: "github.com/philetus/flyspek/pane", typ: mgl32.Mat3, tag: ""}, {prop: "shader", name: "shader", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "uTransform", name: "uTransform", pkg: "github.com/philetus/flyspek/pane", typ: ptrType, tag: ""}, {prop: "aVertex", name: "aVertex", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aBezier", name: "aBezier", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aCurve", name: "aCurve", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "aColor", name: "aColor", pkg: "github.com/philetus/flyspek/pane", typ: $Int, tag: ""}, {prop: "meshdeks", name: "meshdeks", pkg: "github.com/philetus/flyspek/pane", typ: mapType, tag: ""}, {prop: "resizePipe", name: "resizePipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType, tag: ""}, {prop: "meshPipe", name: "meshPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$1, tag: ""}, {prop: "zoomPipe", name: "zoomPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$2, tag: ""}, {prop: "panPipe", name: "panPipe", pkg: "github.com/philetus/flyspek/pane", typ: chanType$2, tag: ""}, {prop: "PointerPipe", name: "PointerPipe", pkg: "", typ: chanType$3, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -22161,7 +22228,8 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, mgl32, mesh, pane, sliceType, sliceType$1, sliceType$2, arrayType, arrayType$1, arrayType$2, sliceType$3, main;
+	var $pkg = {}, $init, fmt, mgl32, mesh, pane, sliceType, sliceType$1, sliceType$2, arrayType, arrayType$1, arrayType$2, sliceType$3, sliceType$4, main, makeTriangle;
+	fmt = $packages["fmt"];
 	mgl32 = $packages["github.com/go-gl/mathgl/mgl32"];
 	mesh = $packages["github.com/philetus/flyspek/mesh"];
 	pane = $packages["github.com/philetus/flyspek/pane"];
@@ -22172,29 +22240,71 @@ $packages["main"] = (function() {
 	arrayType$1 = $arrayType($Float32, 4);
 	arrayType$2 = $arrayType($Int, 3);
 	sliceType$3 = $sliceType(mesh.Mesh);
+	sliceType$4 = $sliceType($emptyInterface);
 	main = function() {
-		var $ptr, _r, m2, msh, pn, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; m2 = $f.m2; msh = $f.msh; pn = $f.pn; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _r, _r$1, _r$2, _r$3, _ref, _selection, m2, msh, pn, pntrEvnt, pointerDown, x, x$1, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _selection = $f._selection; m2 = $f.m2; msh = $f.msh; pn = $f.pn; pntrEvnt = $f.pntrEvnt; pointerDown = $f.pointerDown; x = $f.x; x$1 = $f.x$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = pane.New(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		pn = _r;
+		pointerDown = false;
 		msh = new mesh.Mesh.ptr(1, 1, new sliceType([$toNativeArray($kindFloat32, [50, 50]), $toNativeArray($kindFloat32, [150, 150]), $toNativeArray($kindFloat32, [250, 50]), $toNativeArray($kindFloat32, [50, 170]), $toNativeArray($kindFloat32, [250, 130])]), new sliceType$1([$toNativeArray($kindFloat32, [1, 0, 0, 1]), $toNativeArray($kindFloat32, [1, 0, 1, 1]), $toNativeArray($kindFloat32, [0, 0, 1, 1]), $toNativeArray($kindFloat32, [0, 1, 1, 1]), $toNativeArray($kindFloat32, [1, 1, 0, 1])]), new sliceType$2([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 2, $toNativeArray($kindInt, [0, 1, 2])), new mesh.Triangle.ptr($toNativeArray($kindInt, [1, 3, 0]), 1, $toNativeArray($kindInt, [1, 3, 0])), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 4, 1]), 0, $toNativeArray($kindInt, [2, 4, 1]))]));
-		m2 = new mesh.Mesh.ptr(2, 0, new sliceType([$toNativeArray($kindFloat32, [100, 100]), $toNativeArray($kindFloat32, [100, 200]), $toNativeArray($kindFloat32, [200, 200])]), new sliceType$1([$toNativeArray($kindFloat32, [1, 0, 0, 0.699999988079071])]), new sliceType$2([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 0, arrayType$2.zero())]));
+		m2 = $clone(makeTriangle(2, 0, $toNativeArray($kindFloat32, [100, 100])), mesh.Mesh);
 		$r = pn.SetZoom(2, 2); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = pn.SetPan(0, 50); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = pn.Draw(new sliceType$3([msh, m2])); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f.m2 = m2; $f.msh = msh; $f.pn = pn; $f.$s = $s; $f.$r = $r; return $f;
+		/* while (true) { */ case 5:
+			_r$1 = $select([[pn.PointerPipe]]); /* */ $s = 7; case 7: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			_selection = _r$1;
+			/* */ if (_selection[0] === 0) { $s = 8; continue; }
+			/* */ $s = 9; continue;
+			/* if (_selection[0] === 0) { */ case 8:
+				pntrEvnt = $clone(_selection[1][0], pane.PointerEvent);
+				_ref = pntrEvnt.Flvr;
+				/* */ if (_ref === 0) { $s = 10; continue; }
+				/* */ if (_ref === 1) { $s = 11; continue; }
+				/* */ if (_ref === 2) { $s = 12; continue; }
+				/* */ $s = 13; continue;
+				/* if (_ref === 0) { */ case 10:
+					pointerDown = true;
+					_r$2 = fmt.Sprintf("pointer down at %v\n", new sliceType$4([new mgl32.Vec2(pntrEvnt.Pos)])); /* */ $s = 14; case 14: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+					$r = pn.Log(_r$2); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					$copy((x = msh.Vrts, (0 >= x.$length ? $throwRuntimeError("index out of range") : x.$array[x.$offset + 0])), pntrEvnt.Pos, mgl32.Vec2);
+					$r = pn.Draw(new sliceType$3([msh])); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					$s = 13; continue;
+				/* } else if (_ref === 1) { */ case 11:
+					_r$3 = fmt.Sprintf("pointer up at %v\n", new sliceType$4([new mgl32.Vec2(pntrEvnt.Pos)])); /* */ $s = 17; case 17: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+					$r = pn.Log(_r$3); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					pointerDown = false;
+					$s = 13; continue;
+				/* } else if (_ref === 2) { */ case 12:
+					/* */ if (pointerDown) { $s = 19; continue; }
+					/* */ $s = 20; continue;
+					/* if (pointerDown) { */ case 19:
+						$copy((x$1 = msh.Vrts, (0 >= x$1.$length ? $throwRuntimeError("index out of range") : x$1.$array[x$1.$offset + 0])), pntrEvnt.Pos, mgl32.Vec2);
+						$r = pn.Draw(new sliceType$3([msh])); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					/* } */ case 20:
+				/* } */ case 13:
+			/* } */ case 9:
+		/* } */ $s = 5; continue; case 6:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._selection = _selection; $f.m2 = m2; $f.msh = msh; $f.pn = pn; $f.pntrEvnt = pntrEvnt; $f.pointerDown = pointerDown; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	makeTriangle = function(n, d, o) {
+		var $ptr, d, n, o;
+		o = $clone(o, mgl32.Vec2);
+		return new mesh.Mesh.ptr(n, d, new sliceType([$clone(new mgl32.Vec2(o).Add($toNativeArray($kindFloat32, [0, 0])), mgl32.Vec2), $clone(new mgl32.Vec2(o).Add($toNativeArray($kindFloat32, [0, 100])), mgl32.Vec2), $clone(new mgl32.Vec2(o).Add($toNativeArray($kindFloat32, [100, 100])), mgl32.Vec2)]), new sliceType$1([$toNativeArray($kindFloat32, [0.699999988079071, 1, 0, 0.699999988079071])]), new sliceType$2([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 0, arrayType$2.zero())]));
 	};
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = mgl32.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mesh.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = pane.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ if ($pkg === $mainPkg) { $s = 4; continue; }
-		/* */ $s = 5; continue;
-		/* if ($pkg === $mainPkg) { */ case 4:
-			$r = main(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* } */ case 5:
+		$r = fmt.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mgl32.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mesh.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = pane.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if ($pkg === $mainPkg) { $s = 5; continue; }
+		/* */ $s = 6; continue;
+		/* if ($pkg === $mainPkg) { */ case 5:
+			$r = main(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 6:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;

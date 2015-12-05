@@ -131,10 +131,6 @@ func (self *pane) drawBuff(bff *glbuff) {
     self.gl.DrawArrays(self.gl.TRIANGLES, 0, bff.lngth)
 }
 
-func (self *pane) DropBuff(nmbr mesh.Number) {
-    delete(self.meshdeks, nmbr)
-}
-
 type byDepth []*glbuff
 func (d byDepth) Len() int {
     return len(d) 

@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     // "github.com/gopherjs/gopherjs/js"
     "github.com/go-gl/mathgl/mgl32"
     "github.com/philetus/flyspek/mesh"
@@ -10,6 +11,8 @@ import (
 func main() {
 
     pn := pane.New()
+
+    var pointerDown bool
 
     // build mesh
     msh := mesh.Mesh{
@@ -47,25 +50,54 @@ func main() {
             },
     }
 
-    m2 := mesh.Mesh{
-        Nmbr: 2,
-        Dpth: 0.0,
-        Vrts: []mgl32.Vec2{
-            {100, 100},
-            {100, 200},
-            {200, 200},
-        },
-        Clrs: []mgl32.Vec4{
-            {1.0, 0.0, 0.0, 0.7},
-        },
-        Trngls: []mesh.Triangle{
-            {Vnd: mesh.Nd{0, 1, 2}},
-        },
-    }
+    m2 := makeTriangle(2, 0.0, mgl32.Vec2{100, 100})
 
     pn.SetZoom(2.0, 2.0)
     pn.SetPan(0.0, 50.0)
 
     // add meshes to pane and draw them
     pn.Draw(msh, m2)
+
+    // loop and handle pointer events
+    for {
+        select {
+        case pntrEvnt := <- pn.PointerPipe:
+            switch pntrEvnt.Flvr {
+
+            case pane.DOWN:
+                pointerDown = true
+                pn.Log(fmt.Sprintf("pointer down at %v\n", pntrEvnt.Pos))
+                msh.Vrts[0] = pntrEvnt.Pos
+                pn.Draw(msh)
+
+            case pane.UP:
+                pn.Log(fmt.Sprintf("pointer up at %v\n", pntrEvnt.Pos))
+                pointerDown = false
+
+            case pane.MOVE:
+                if pointerDown {
+                    msh.Vrts[0] = pntrEvnt.Pos
+                    pn.Draw(msh)
+                }
+            }
+        }
+    }
+}
+
+func makeTriangle(n mesh.Number, d float32, o mgl32.Vec2) mesh.Mesh {
+    return mesh.Mesh{
+        Nmbr: n,
+        Dpth: d,
+        Vrts: []mgl32.Vec2{
+            o.Add(mgl32.Vec2{0, 0}),
+            o.Add(mgl32.Vec2{0, 100}),
+            o.Add(mgl32.Vec2{100, 100}),
+        },
+        Clrs: []mgl32.Vec4{
+            {0.7, 1.0, 0.0, 0.7},
+        },
+        Trngls: []mesh.Triangle{
+            {Vnd: mesh.Nd{0, 1, 2}},
+        },
+    }
 }
