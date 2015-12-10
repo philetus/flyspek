@@ -1,7 +1,7 @@
 package pane
 
 import (
-    //"fmt"
+    "fmt"
     "github.com/gopherjs/gopherjs/js"
     "github.com/gopherjs/webgl"
     "github.com/go-gl/mathgl/mgl32" // vector & matrix lib
@@ -9,8 +9,6 @@ import (
 )
 
 type pane struct { // pane type hidden, call pane.New() to create pane
-    console *js.Object // browser console to log to
-
     window, document, canvas *js.Object
     gl *webgl.Context
     width, height int
@@ -32,14 +30,12 @@ type pane struct { // pane type hidden, call pane.New() to create pane
 }
 
 func New() *pane {
+    fmt.Println("creating new pane")
+
     self := new(pane) // allocate new pane struct
     self.meshdeks = make(map[mesh.Number]*glbuff) // allocate mesh buffer map
     self.zoom = []float32{1.0, 1.0} // zoom defaults to 1.0
     self.pan = []float32{0.0, 0.0}
-
-    // connect console
-    self.console = js.Global.Get("console")
-    self.Log("creating new pane")
 
     // create canvas and append to document
     self.window = js.Global.Get("window")
@@ -52,7 +48,7 @@ func New() *pane {
     attrs.Alpha = false
     gl, err := webgl.NewContext(self.canvas, attrs)
     if err != nil {
-        self.Log("error: "+err.Error())
+        fmt.Println("error: ", err.Error())
         return nil
     }
     self.gl = gl
@@ -77,10 +73,6 @@ func New() *pane {
     go self.loop()
 
     return self
-}
-
-func (self *pane) Log(msg string) {
-    self.console.Call("log", msg)
 }
 
 func (self *pane) SetZoom(x, y float32) {

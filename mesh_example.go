@@ -66,12 +66,12 @@ func main() {
 
             case pane.DOWN:
                 pointerDown = true
-                pn.Log(fmt.Sprintf("pointer down at %v\n", pntrEvnt.Pos))
+                fmt.Printf("pointer down at %v\n", pntrEvnt.Pos)
                 msh.Vrts[0] = pntrEvnt.Pos
                 pn.Draw(msh)
 
             case pane.UP:
-                pn.Log(fmt.Sprintf("pointer up at %v\n", pntrEvnt.Pos))
+                fmt.Printf("pointer up at %v\n", pntrEvnt.Pos)
                 pointerDown = false
 
             case pane.MOVE:

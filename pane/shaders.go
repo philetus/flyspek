@@ -1,7 +1,7 @@
 package pane
 
 import (
-    //"fmt"
+    "fmt"
     "github.com/gopherjs/gopherjs/js"
 )
 
@@ -54,15 +54,13 @@ func (self *pane) initShaders() {
 
     // init shader
     self.shader = self.gl.CreateProgram()
-    //self.Log(vertexShaderSource)
-    //self.Log(fragShaderSource)
     vertexShader := self.getShader(self.gl.VERTEX_SHADER, vertexShaderSource)
     fragShader := self.getShader(self.gl.FRAGMENT_SHADER, fragShaderSource)
     self.gl.AttachShader(self.shader, vertexShader)
     self.gl.AttachShader(self.shader, fragShader)
     self.gl.LinkProgram(self.shader)
     if !self.gl.GetProgramParameterb(self.shader, self.gl.LINK_STATUS) {
-        self.Log("couldnt init shaders :(")
+        fmt.Println("couldnt init shaders :(")
     }
     self.gl.UseProgram(self.shader)
 
@@ -86,7 +84,7 @@ func (self *pane) getShader(typ int, src string) (shader *js.Object) {
     self.gl.CompileShader(shader)
     
     if !self.gl.GetShaderParameter(shader, self.gl.COMPILE_STATUS).Bool() {
-        self.Log(self.gl.GetShaderInfoLog(shader))
+        fmt.Println(self.gl.GetShaderInfoLog(shader))
         return nil
     }
     return shader
