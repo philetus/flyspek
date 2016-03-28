@@ -1,0 +1,56 @@
+// spek 0.1
+zib
+{
+    "surf": swag 
+    {
+        "depth": quant *2.0*
+        "weight": quant *5.0*
+        "stroke": quant[4] { *1.0*, *0.0*, *0.0*, *0.7* }
+        "fill": quant[4] { *1.0*, *0.0*, *0.0*, *0.3* }
+    }
+
+    zone // high level description of a mesh
+    {
+        guide[] // first guide plex is extent of zone
+        {
+            { 
+                "pos": quant[2] { *0.0*, *0.0* }
+                "bend": quant[2] < "", "down" >
+            }
+            # << "", "lwing", "profile" >> // # -> unroll enum
+            { 
+                "pos": quant[2] { *-33.0*, *0.0* }
+                "bend": quant[2] < "", "down" >
+            }
+            # << "", "rwing", "profile" >> ((#, 0, -1)) // reverse order
+        }
+        // .. -> rest of guide plexs are gaps
+    }
+
+    quant[2] "down" { *0.0*, *1.0* }
+
+    zib "lwing"
+    {
+        "ankr": warp "hip"
+        {
+            "lat": quant[2] { *8.0*, *15.0* }
+        ]
+        guide[] "profile"
+        {
+            () { "bend": quant[2] < "", "down" > } // default is curved
+            { "pos": quant[2] { *0.0*, *0.0* } }
+            { "pos": quant[2] { *7.0*, *15.0* } }
+            { "pos": quant[2] { *-26.0*, *0.0* } }
+            { "pos": quant[2] { *-47.0*, *5.0* } }
+        }
+    }
+
+    zib "rwing" < "", "lwing" >
+    {
+        "ankr": warp[]
+        {
+            < "", "lwing", "hip" >
+            { "mir": quant[2] < "", "down" > ]
+        }
+    }
+}

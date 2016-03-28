@@ -36,16 +36,16 @@ func main() {
                 { 
                     Vnd: mesh.Nd{0, 1, 2}, 
                     Flvr: mesh.CONCAVE, 
-                    Cnd: mesh.Nd{0, 1, 2}, 
+                    Cnd: mesh.Nd{0, 1, 0}, 
                 },
                 { 
                     Vnd: mesh.Nd{1, 3, 0}, 
                     Flvr: mesh.CONVEX,
-                    Cnd: mesh.Nd{1, 3, 0}, 
+                    Cnd: mesh.Nd{1, 2, 1}, 
                 },
                 { 
                     Vnd: mesh.Nd{2, 4, 1}, 
-                    Cnd: mesh.Nd{2, 4, 1},
+                    Cnd: mesh.Nd{4, 0, 4},
                 },
             },
     }

@@ -1,0 +1,102 @@
+// spek 0.1
+zib 
+{
+    zib[6] "field"
+    {
+        ()
+        {
+            "ankr": warp // each flower is translated by 64
+            {
+                "lat": quant[2] 
+                {
+                    (0) { "mult": quant[2] { *field*, *64.0* } }
+                }
+            }
+            zone "flower"
+            {
+                "swag": swag < "swagzib", "flowerswag" >
+                "extent": guide[]
+                {
+                    // unroll nested petal profile guide plexs
+                    # 
+                    {
+                        # < "_", "petals(0)" > (()) (()) 
+                }
+            }
+        }
+        (0)
+        {
+            zib[5] "petals"
+            {
+                () 
+                {
+                    "ankr": warp[2]
+                    {
+                        { "lat": quant[2] { *0.0*, *3.0* } }
+                        { 
+                            "rot": quant // radians
+                            {
+                                "mult": quant[2] { "flower", *1.25* } 
+                            }
+                        }
+                    }
+                    "surf": swag <"petalzib", "petalswag">
+                }
+        }
+                (1)
+                {
+                    "surf": swag <"petalzib", "petalswag">
+                    {
+                        "fill": quant[4] { *0.0*, *1.0*, *1.0*, *0.8* }
+                    }
+                }
+                (2)
+                {
+                    "surf": swag <"petalzib", "petalswag">
+                    {
+                        "fill": quant[4] { *1.0*, *0.0*, *1.0*, *0.8* }
+                    }
+                }
+                (3)
+                {
+                    "surf": swag <"petalzib", "petalswag">
+                    {
+                        "fill": quant[4] { *1.0*, *0.0*, *0.0*, *0.9* }
+                    }
+                }
+                (4)
+                {
+                    "surf": swag <"petalzib", "petalswag">
+                    {
+                        "fill": quant[4] { *1.0*, *1.0*, *0.0*, *0.7* }
+                    }
+                }
+            }
+        }
+    }
+    quant[2] "down" { *0.0*, *1.0* }
+}
+zib "swagzib"
+{
+    swag "flowerswag"
+    {
+        "depth": quant *2.0*
+        "weight": quant *5.0*
+        "stroke": quant[4] "reddish"
+        { 
+            () *0.1* // default value
+            ((0) (3)) *0.7* // 0th & 3rd turts overridden
+        }
+        "fill": quant[4]
+        {
+            (0) *1.0*
+            (3) *0.3*
+        }
+    }
+    zone "petal"
+    {
+        guide[4] "profile"
+        {
+        }
+    }
+}
