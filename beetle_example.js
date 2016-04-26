@@ -22492,68 +22492,142 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, fmt, mgl32, mesh, pane, sliceType, sliceType$1, sliceType$2, sliceType$3, sliceType$4, arrayType, arrayType$1, arrayType$2, c, q, c0x, c0y, c1dy, c2dy, c4dx, c5dx, c5dy, q0dx, q0dy, q1dx, q1dy, q2dx, q2dy, q3dx, q3dy, q4dx, q4dy, main, makeChest, resolveValues, tween, tweenQ;
+	var $pkg = {}, $init, fmt, mgl32, mesh, pane, arrayType, sliceType, sliceType$1, sliceType$2, sliceType$3, sliceType$4, arrayType$1, arrayType$2, c, q, c0x, c0y, c1dy, c2dy, c4dx, c5dx, c5dy, q0dx, q0dy, q1dx, q1dy, q2dx, q2dy, q3dx, q3dy, q4dx, q4dy, frstDot, dotx, doty, pointerDown, slctdC, lstPnt, slctRd, main, pointAt, moveC, makeMeshes, makeDot, makeChest, resolveValues, tween, tweenQ;
 	fmt = $packages["fmt"];
 	mgl32 = $packages["github.com/go-gl/mathgl/mgl32"];
 	mesh = $packages["github.com/philetus/flyspek/mesh"];
 	pane = $packages["github.com/philetus/flyspek/pane"];
+	arrayType = $arrayType($Float32, 2);
 	sliceType = $sliceType(mgl32.Vec2);
-	sliceType$1 = $sliceType(mesh.Mesh);
-	sliceType$2 = $sliceType($emptyInterface);
+	sliceType$1 = $sliceType($emptyInterface);
+	sliceType$2 = $sliceType(mesh.Mesh);
 	sliceType$3 = $sliceType(mgl32.Vec4);
 	sliceType$4 = $sliceType(mesh.Triangle);
-	arrayType = $arrayType($Float32, 2);
 	arrayType$1 = $arrayType($Float32, 4);
 	arrayType$2 = $arrayType($Int, 3);
 	main = function() {
-		var $ptr, _1, _r, _r$1, _r$2, _r$3, _selection, chst, pn, pntrEvnt, pointerDown, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _1 = $f._1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _selection = $f._selection; chst = $f.chst; pn = $f.pn; pntrEvnt = $f.pntrEvnt; pointerDown = $f.pointerDown; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _1, _r, _r$1, _r$2, _r$3, _selection, ms, ms$1, ms$2, pn, pntrEvnt, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _1 = $f._1; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _selection = $f._selection; ms = $f.ms; ms$1 = $f.ms$1; ms$2 = $f.ms$2; pn = $f.pn; pntrEvnt = $f.pntrEvnt; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = pane.New(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		pn = _r;
-		pointerDown = false;
-		$r = resolveValues(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		chst = $clone(makeChest(), mesh.Mesh);
-		$r = pn.SetZoom(2, 2); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = pn.SetPan(0, 50); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = pn.Draw(new sliceType$1([chst])); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* while (true) { */ case 6:
-			_r$1 = $select([[pn.PointerPipe]]); /* */ $s = 8; case 8: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		$r = pn.SetZoom(4, 4); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = pn.SetPan(80, 80); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		ms = makeMeshes();
+		$r = pn.Draw(ms); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* while (true) { */ case 5:
+			_r$1 = $select([[pn.PointerPipe]]); /* */ $s = 7; case 7: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			_selection = _r$1;
-			/* */ if (_selection[0] === 0) { $s = 9; continue; }
-			/* */ $s = 10; continue;
-			/* if (_selection[0] === 0) { */ case 9:
+			/* */ if (_selection[0] === 0) { $s = 8; continue; }
+			/* */ $s = 9; continue;
+			/* if (_selection[0] === 0) { */ case 8:
 				pntrEvnt = $clone(_selection[1][0], pane.PointerEvent);
 					_1 = pntrEvnt.Flvr;
-					/* */ if (_1 === (0)) { $s = 12; continue; }
-					/* */ if (_1 === (1)) { $s = 13; continue; }
-					/* */ if (_1 === (2)) { $s = 14; continue; }
-					/* */ $s = 15; continue;
-					/* if (_1 === (0)) { */ case 12:
+					/* */ if (_1 === (0)) { $s = 11; continue; }
+					/* */ if (_1 === (1)) { $s = 12; continue; }
+					/* */ if (_1 === (2)) { $s = 13; continue; }
+					/* */ $s = 14; continue;
+					/* if (_1 === (0)) { */ case 11:
 						pointerDown = true;
-						_r$2 = fmt.Printf("pointer down at %v\n", new sliceType$2([new mgl32.Vec2(pntrEvnt.Pos)])); /* */ $s = 16; case 16: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+						_r$2 = fmt.Printf("pointer down at %v\n", new sliceType$1([new mgl32.Vec2(pntrEvnt.Pos)])); /* */ $s = 15; case 15: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 						_r$2;
-						$s = 15; continue;
-					/* } else if (_1 === (1)) { */ case 13:
-						_r$3 = fmt.Printf("pointer up at %v\n", new sliceType$2([new mgl32.Vec2(pntrEvnt.Pos)])); /* */ $s = 17; case 17: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+						/* */ if (pointAt(pntrEvnt.Pos)) { $s = 16; continue; }
+						/* */ $s = 17; continue;
+						/* if (pointAt(pntrEvnt.Pos)) { */ case 16:
+							ms$1 = makeMeshes();
+							$r = pn.Draw(ms$1); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+						/* } */ case 17:
+						$s = 14; continue;
+					/* } else if (_1 === (1)) { */ case 12:
+						_r$3 = fmt.Printf("pointer up at %v\n", new sliceType$1([new mgl32.Vec2(pntrEvnt.Pos)])); /* */ $s = 19; case 19: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 						_r$3;
 						pointerDown = false;
-						$s = 15; continue;
-					/* } else if (_1 === (2)) { */ case 14:
-						if (pointerDown) {
-						}
-					/* } */ case 15:
-				case 11:
-			/* } */ case 10:
-		/* } */ $s = 6; continue; case 7:
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._1 = _1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._selection = _selection; $f.chst = chst; $f.pn = pn; $f.pntrEvnt = pntrEvnt; $f.pointerDown = pointerDown; $f.$s = $s; $f.$r = $r; return $f;
+						$s = 14; continue;
+					/* } else if (_1 === (2)) { */ case 13:
+						/* */ if (pointerDown && (slctdC >= 0)) { $s = 20; continue; }
+						/* */ $s = 21; continue;
+						/* if (pointerDown && (slctdC >= 0)) { */ case 20:
+							moveC(pntrEvnt.Pos);
+							ms$2 = makeMeshes();
+							$r = pn.Draw(ms$2); /* */ $s = 22; case 22: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+						/* } */ case 21:
+					/* } */ case 14:
+				case 10:
+			/* } */ case 9:
+		/* } */ $s = 5; continue; case 6:
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._1 = _1; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._selection = _selection; $f.ms = ms; $f.ms$1 = ms$1; $f.ms$2 = ms$2; $f.pn = pn; $f.pntrEvnt = pntrEvnt; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	pointAt = function(v) {
+		var $ptr, _i, _ref, i, p, v;
+		v = $clone(v, mgl32.Vec2);
+		_ref = c;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			i = _i;
+			p = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mgl32.Vec2);
+			if (new mgl32.Vec2(new mgl32.Vec2(p).Sub(v)).Len() < slctRd) {
+				slctdC = i;
+				mgl32.Vec2.copy(lstPnt, v);
+				return true;
+			}
+			_i++;
+		}
+		slctdC = -1;
+		return false;
+	};
+	moveC = function(v) {
+		var $ptr, _2, _tuple, d, v;
+		v = $clone(v, mgl32.Vec2);
+		d = $clone(new mgl32.Vec2(v).Sub(lstPnt), mgl32.Vec2);
+		mgl32.Vec2.copy(lstPnt, v);
+		_2 = slctdC;
+		if (_2 === (0)) {
+			_tuple = new mgl32.Vec2(lstPnt).Elem();
+			c0x = _tuple[0];
+			c0y = _tuple[1];
+		} else if (_2 === (1)) {
+			c1dy = $fround(c1dy + (d[1]));
+		} else if (_2 === (2)) {
+			c2dy = $fround(c2dy + (d[1]));
+		} else if (_2 === (4)) {
+			c4dx = $fround(c4dx + (d[0]));
+		} else if (_2 === (5)) {
+			c5dx = $fround(c5dx + (d[0]));
+			c5dy = $fround(c5dy + (d[1]));
+		}
+	};
+	makeMeshes = function() {
+		var $ptr, _i, _ref, chst, clr, d, i, ms, v;
+		ms = sliceType$2.nil;
+		resolveValues();
+		chst = $clone(makeChest(), mesh.Mesh);
+		ms = $append(ms, chst);
+		clr = $toNativeArray($kindFloat32, [1, 0, 1, 0.699999988079071]);
+		_ref = c;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			i = _i;
+			v = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mgl32.Vec2);
+			d = $clone(makeDot(v, i + frstDot >> 0, clr), mesh.Mesh);
+			ms = $append(ms, d);
+			_i++;
+		}
+		ms = ms;
+		return ms;
+	};
+	makeDot = function(v, i, clr) {
+		var $ptr, clr, i, v;
+		clr = $clone(clr, mgl32.Vec4);
+		v = $clone(v, mgl32.Vec2);
+		return new mesh.Mesh.ptr((i >> 0), 0.5, new sliceType([$toNativeArray($kindFloat32, [$fround(v[0] - dotx), v[1]]), $toNativeArray($kindFloat32, [v[0], $fround(v[1] - doty)]), $toNativeArray($kindFloat32, [$fround(v[0] + dotx), v[1]]), $toNativeArray($kindFloat32, [v[0], $fround(v[1] + doty)])]), new sliceType$3([$clone(clr, mgl32.Vec4)]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 3, 0]), 1, arrayType$2.zero())]));
 	};
 	makeChest = function() {
 		var $ptr;
-		return new mesh.Mesh.ptr(1, 1, new sliceType([$clone((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), mgl32.Vec2), $clone((7 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 7]), mgl32.Vec2), $clone((6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), mgl32.Vec2), $clone((6 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 6]), mgl32.Vec2), $clone((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), mgl32.Vec2), $clone((5 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 5]), mgl32.Vec2), $clone((1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), mgl32.Vec2), $clone((0 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 0]), mgl32.Vec2), $clone((4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), mgl32.Vec2), $clone((1 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 1]), mgl32.Vec2), $clone((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), mgl32.Vec2), $clone((2 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 2]), mgl32.Vec2)]), new sliceType$3([$toNativeArray($kindFloat32, [1, 1, 0, 1])]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [10, 11, 0]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 3, 2]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [10, 9, 8]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 5, 6]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [9, 7, 8]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 2, 3]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 9, 10]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 3, 6]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 6, 9]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 6, 3]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 9, 6]), 0, arrayType$2.zero())]));
+		return new mesh.Mesh.ptr(1, 1, new sliceType([$clone((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), mgl32.Vec2), $clone((7 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 7]), mgl32.Vec2), $clone((6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), mgl32.Vec2), $clone((6 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 6]), mgl32.Vec2), $clone((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), mgl32.Vec2), $clone((5 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 5]), mgl32.Vec2), $clone((1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), mgl32.Vec2), $clone((0 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 0]), mgl32.Vec2), $clone((4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), mgl32.Vec2), $clone((1 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 1]), mgl32.Vec2), $clone((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), mgl32.Vec2), $clone((2 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 2]), mgl32.Vec2)]), new sliceType$3([$toNativeArray($kindFloat32, [1, 1, 0, 1])]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [10, 11, 0]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 3, 2]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [10, 9, 8]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 5, 6]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [6, 7, 8]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 2, 3]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 9, 10]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 3, 6]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 6, 9]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 6, 3]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 9, 6]), 0, arrayType$2.zero())]));
 	};
 	resolveValues = function() {
-		var $ptr, _r, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _tuple, _tuple$1, _tuple$10, _tuple$11, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, _tuple$9, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$10 = $f._tuple$10; _tuple$11 = $f._tuple$11; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; _tuple$8 = $f._tuple$8; _tuple$9 = $f._tuple$9; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _tuple, _tuple$1, _tuple$10, _tuple$11, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, _tuple$9;
 		(0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] = c0x;
 		(0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] = c0y;
 		(1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1])[0] = (0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0];
@@ -22564,85 +22638,63 @@ $packages["main"] = (function() {
 		(7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] - c4dx);
 		(4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[1] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] + ($fround(c1dy / 2)));
 		(7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7])[1] = (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[1];
-		_r = tween((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_tuple = _r;
+		_tuple = tween((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]));
 		(3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3])[0] = _tuple[0];
 		(3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3])[1] = _tuple[1];
-		_r$1 = tween((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		_tuple$1 = _r$1;
+		_tuple$1 = tween((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]));
 		(6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6])[0] = _tuple$1[0];
 		(6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6])[1] = _tuple$1[1];
 		(5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] + c5dx);
 		(8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] - c5dx);
 		(5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[1] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] + c5dy);
 		(8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8])[1] = (5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[1];
-		_r$2 = tweenQ((1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), $toNativeArray($kindFloat32, [q0dx, q0dy])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		_tuple$2 = _r$2;
+		_tuple$2 = tweenQ((1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), $toNativeArray($kindFloat32, [q0dx, q0dy]));
 		(0 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 0])[0] = _tuple$2[0];
 		(0 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 0])[1] = _tuple$2[1];
-		_r$3 = tweenQ((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), (1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), $toNativeArray($kindFloat32, [-q0dx, q0dy])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		_tuple$3 = _r$3;
+		_tuple$3 = tweenQ((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), (1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), $toNativeArray($kindFloat32, [-q0dx, q0dy]));
 		(5 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 5])[0] = _tuple$3[0];
 		(5 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 5])[1] = _tuple$3[1];
-		_r$4 = tweenQ((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), $toNativeArray($kindFloat32, [q1dx, q1dy])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_tuple$4 = _r$4;
+		_tuple$4 = tweenQ((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), $toNativeArray($kindFloat32, [q1dx, q1dy]));
 		(1 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 1])[0] = _tuple$4[0];
 		(1 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 1])[1] = _tuple$4[1];
-		_r$5 = tweenQ((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), (6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), $toNativeArray($kindFloat32, [-q1dx, q1dy])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-		_tuple$5 = _r$5;
+		_tuple$5 = tweenQ((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), (6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), $toNativeArray($kindFloat32, [-q1dx, q1dy]));
 		(6 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 6])[0] = _tuple$5[0];
 		(6 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 6])[1] = _tuple$5[1];
-		_r$6 = tweenQ((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), (0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), $toNativeArray($kindFloat32, [q2dx, q2dy])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		_tuple$6 = _r$6;
+		_tuple$6 = tweenQ((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), (0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), $toNativeArray($kindFloat32, [q2dx, q2dy]));
 		(2 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 2])[0] = _tuple$6[0];
 		(2 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 2])[1] = _tuple$6[1];
-		_r$7 = tweenQ((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), $toNativeArray($kindFloat32, [-q2dx, q2dy])); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-		_tuple$7 = _r$7;
+		_tuple$7 = tweenQ((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), $toNativeArray($kindFloat32, [-q2dx, q2dy]));
 		(7 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 7])[0] = _tuple$7[0];
 		(7 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 7])[1] = _tuple$7[1];
-		_r$8 = tweenQ((4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), (5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5]), $toNativeArray($kindFloat32, [q3dx, q3dy])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-		_tuple$8 = _r$8;
+		_tuple$8 = tweenQ((4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), (5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5]), $toNativeArray($kindFloat32, [q3dx, q3dy]));
 		(3 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 3])[0] = _tuple$8[0];
 		(3 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 3])[1] = _tuple$8[1];
-		_r$9 = tweenQ((8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8]), (7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), $toNativeArray($kindFloat32, [-q3dx, q3dy])); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-		_tuple$9 = _r$9;
+		_tuple$9 = tweenQ((8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8]), (7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), $toNativeArray($kindFloat32, [-q3dx, q3dy]));
 		(8 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 8])[0] = _tuple$9[0];
 		(8 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 8])[1] = _tuple$9[1];
-		_r$10 = tweenQ((5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5]), (2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2]), $toNativeArray($kindFloat32, [q4dx, q4dy])); /* */ $s = 11; case 11: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-		_tuple$10 = _r$10;
+		_tuple$10 = tweenQ((5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5]), (2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2]), $toNativeArray($kindFloat32, [q4dx, q4dy]));
 		(4 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 4])[0] = _tuple$10[0];
 		(4 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 4])[1] = _tuple$10[1];
-		_r$11 = tweenQ((2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2]), (8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8]), $toNativeArray($kindFloat32, [-q4dx, q4dy])); /* */ $s = 12; case 12: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
-		_tuple$11 = _r$11;
+		_tuple$11 = tweenQ((2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2]), (8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8]), $toNativeArray($kindFloat32, [-q4dx, q4dy]));
 		(9 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 9])[0] = _tuple$11[0];
 		(9 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 9])[1] = _tuple$11[1];
-		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: resolveValues }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$10 = _tuple$10; $f._tuple$11 = _tuple$11; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f._tuple$9 = _tuple$9; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	tween = function(a, b) {
-		var $ptr, _r, _r$1, _r$2, _tuple, a, b, v, x, y, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple = $f._tuple; a = $f.a; b = $f.b; v = $f.v; x = $f.x; y = $f.y; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _tuple, a, b, v, x, y;
 		x = 0;
 		y = 0;
 		b = $clone(b, mgl32.Vec2);
 		a = $clone(a, mgl32.Vec2);
 		v = $clone(new mgl32.Vec2(b).Sub(a), mgl32.Vec2);
-		_r = fmt.Printf("\t%v - % v = %v\n", new sliceType$2([new mgl32.Vec2(b), new mgl32.Vec2(a), new mgl32.Vec2(v)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r;
 		mgl32.Vec2.copy(v, new mgl32.Vec2(v).Mul(0.5));
-		_r$1 = fmt.Printf("\t0.5 * v = %v\n", new sliceType$2([new mgl32.Vec2(v)])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		_r$1;
 		mgl32.Vec2.copy(v, new mgl32.Vec2(a).Add(v));
-		_r$2 = fmt.Printf("tweening %v & % v to %v\n", new sliceType$2([new mgl32.Vec2(a), new mgl32.Vec2(b), new mgl32.Vec2(v)])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		_r$2;
 		_tuple = new mgl32.Vec2(v).Elem();
 		x = _tuple[0];
 		y = _tuple[1];
 		return [x, y];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: tween }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple = _tuple; $f.a = a; $f.b = b; $f.v = v; $f.x = x; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	tweenQ = function(a, b, c$1) {
-		var $ptr, _r, _tuple, a, b, c$1, v, x, y, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _tuple = $f._tuple; a = $f.a; b = $f.b; c$1 = $f.c$1; v = $f.v; x = $f.x; y = $f.y; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var $ptr, _tuple, a, b, c$1, v, x, y;
 		x = 0;
 		y = 0;
 		c$1 = $clone(c$1, mgl32.Vec2);
@@ -22652,13 +22704,10 @@ $packages["main"] = (function() {
 		mgl32.Vec2.copy(v, new mgl32.Vec2(v).Mul(0.5));
 		mgl32.Vec2.copy(v, new mgl32.Vec2(a).Add(v));
 		mgl32.Vec2.copy(v, new mgl32.Vec2(v).Add(c$1));
-		_r = fmt.Printf("tweenQing %v & % v & %v to %v\n", new sliceType$2([new mgl32.Vec2(a), new mgl32.Vec2(b), new mgl32.Vec2(c$1), new mgl32.Vec2(v)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r;
 		_tuple = new mgl32.Vec2(v).Elem();
 		x = _tuple[0];
 		y = _tuple[1];
 		return [x, y];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: tweenQ }; } $f.$ptr = $ptr; $f._r = _r; $f._tuple = _tuple; $f.a = a; $f.b = b; $f.c$1 = c$1; $f.v = v; $f.x = x; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$init = function() {
 		$pkg.$init = function() {};
@@ -22667,10 +22716,12 @@ $packages["main"] = (function() {
 		$r = mgl32.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = mesh.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = pane.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		pointerDown = false;
+		lstPnt = arrayType.zero();
 		c = $makeSlice(sliceType, 9);
 		q = $makeSlice(sliceType, 10);
-		c0x = 200;
-		c0y = 200;
+		c0x = 0;
+		c0y = 0;
 		c1dy = -50;
 		c2dy = 80;
 		c4dx = 40;
@@ -22686,6 +22737,11 @@ $packages["main"] = (function() {
 		q3dy = -5;
 		q4dx = 5;
 		q4dy = 15;
+		frstDot = 9;
+		dotx = 2;
+		doty = 4;
+		slctdC = -1;
+		slctRd = 5;
 		/* */ if ($pkg === $mainPkg) { $s = 5; continue; }
 		/* */ $s = 6; continue;
 		/* if ($pkg === $mainPkg) { */ case 5:

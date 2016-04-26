@@ -13,8 +13,9 @@ var (
     q = make([]mgl32.Vec2, 10) // array of quadratic curve control vecs
 
     // c0x & c0y can be adjusted, everything else follows
-    c0x float32 = 200
-    c0y float32 = 200
+    c0x float32 = 0
+    c0y float32 = 0
+
     // parameters for adjustable control points, relative to c0
     c1dy float32 = -50
     c2dy float32 = 80
@@ -32,24 +33,26 @@ var (
     q3dy float32 = -5
     q4dx float32 = 5
     q4dy float32 = 15
+
+    frstDot int = 9
+    dotx, doty float32 = 2, 4
+
+    pointerDown bool
+    slctdC int = -1
+    lstPnt mgl32.Vec2
+    slctRd float32 = 5
 )
 
 func main() {
 
     pn := pane.New()
 
-    var pointerDown bool
 
-    resolveValues() // generate initial vectors to make meshes
-    chst := makeChest()
-    //rwng := makeRWing()
-    //lwng := makeLWing()
+    pn.SetZoom(4.0, 4.0)
+    pn.SetPan(80.0, 80.0)
 
-    pn.SetZoom(2.0, 2.0)
-    pn.SetPan(0.0, 50.0)
-
-    // add meshes to pane and draw them
-    pn.Draw(chst)
+    ms := makeMeshes()
+    pn.Draw(ms...)
 
     // loop and handle pointer events
     for {
@@ -60,21 +63,107 @@ func main() {
             case pane.DOWN:
                 pointerDown = true
                 fmt.Printf("pointer down at %v\n", pntrEvnt.Pos)
-                //msh.Vrts[0] = pntrEvnt.Pos
-                //pn.Draw(msh)
+                if pointAt(pntrEvnt.Pos) {
+                    ms := makeMeshes()
+                    pn.Draw(ms...)
+                }
 
             case pane.UP:
                 fmt.Printf("pointer up at %v\n", pntrEvnt.Pos)
                 pointerDown = false
 
             case pane.MOVE:
-                if pointerDown {
-                    //msh.Vrts[0] = pntrEvnt.Pos
-                    //pn.Draw(msh)
+                if pointerDown && (slctdC >= 0) {
+                    moveC(pntrEvnt.Pos)
+                    ms := makeMeshes()
+                    pn.Draw(ms...)
                 }
             }
         }
     }
+}
+
+func pointAt(v mgl32.Vec2) bool {
+    for i, p := range c {
+        if p.Sub(v).Len() < slctRd { // if v is within select radius of c[i]
+            slctdC = i
+            lstPnt = v
+            return true
+        }
+    }
+    slctdC = -1
+    return false
+}
+
+func moveC(v mgl32.Vec2) {
+    d := v.Sub(lstPnt) // calculate delta vec
+    lstPnt = v
+
+    switch slctdC {
+
+    case 0:
+        c0x, c0y = lstPnt.Elem()
+
+    case 1:
+        c1dy += d[1]
+
+    case 2:
+        c2dy += d[1]
+
+    case 4:
+        c4dx += d[0]
+
+    case 5:
+        c5dx += d[0]
+        c5dy += d[1]
+    }
+}
+
+// regenerate meshes
+func makeMeshes() (ms []mesh.Mesh) {
+
+    resolveValues() // generate initial vectors to make meshes
+
+    chst := makeChest()
+    //rwng := makeRWing()
+    //lwng := makeLWing()
+
+    ms = append(ms, chst)
+
+    // add dots at control points
+    clr := mgl32.Vec4{1.0, 0.0, 1.0, 0.7}
+    for i, v := range c {
+        d := makeDot(v, i + frstDot, clr)
+        ms = append(ms, d)
+    }
+
+    return ms
+}
+
+func makeDot(v mgl32.Vec2, i int, clr mgl32.Vec4) mesh.Mesh {
+    return mesh.Mesh{
+        Nmbr: mesh.Number(i),
+        Dpth: 0.5,
+        Vrts: []mgl32.Vec2{
+                {v[0] - dotx, v[1]}, // 0
+                {v[0], v[1] - doty}, // 1
+                {v[0] + dotx, v[1]}, // 2
+                {v[0], v[1] + doty}, // 3
+            },
+        Clrs: []mgl32.Vec4{
+            clr, // magentaish
+            },
+        Trngls: []mesh.Triangle{
+                {
+                    Vnd: mesh.Nd{0, 1, 2},
+                    Flvr: mesh.CONVEX,
+                },
+                {
+                    Vnd: mesh.Nd{2, 3, 0},
+                    Flvr: mesh.CONVEX,
+                },
+            },
+        }
 }
 
 func makeChest() mesh.Mesh {
@@ -120,7 +209,7 @@ func makeChest() mesh.Mesh {
                     Flvr: mesh.CONVEX,
                 },
                 { 
-                    Vnd: mesh.Nd{9, 7, 8}, // c1, q0, c4
+                    Vnd: mesh.Nd{6, 7, 8}, // c1, q0, c4
                     Flvr: mesh.CONVEX,
                 },
                 { 
@@ -185,17 +274,9 @@ func resolveValues() {
 }
 
 func tween(a, b mgl32.Vec2) (x, y float32) {
-    v := b.Sub(a)
-
-    fmt.Printf("\t%v - % v = %v\n", b, a, v)
-    
-    v = v.Mul(0.5)
-
-    fmt.Printf("\t0.5 * v = %v\n", v)
-    
+    v := b.Sub(a)    
+    v = v.Mul(0.5)    
     v = a.Add(v)
-
-    fmt.Printf("tweening %v & % v to %v\n", a, b, v)
 
     return v.Elem()
 }
@@ -205,8 +286,6 @@ func tweenQ(a, b, c mgl32.Vec2) (x, y float32) {
     v = v.Mul(0.5)
     v = a.Add(v)
     v = v.Add(c)
-
-    fmt.Printf("tweenQing %v & % v & %v to %v\n", a, b, c, v)
 
     return v.Elem()
 }
