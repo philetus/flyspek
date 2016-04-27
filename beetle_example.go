@@ -17,30 +17,31 @@ var (
     c0y float32 = 0
 
     // parameters for adjustable control points, relative to c0
+    c0dy float32 = 0
     c1dy float32 = -50
-    c2dy float32 = 80
+    c2dy float32 = 95
     c4dx float32 = 40
     c5dx float32 = 50
     c5dy float32 = 70
 
-    q0dx float32 = 5
-    q0dy float32 = -20
-    q1dx float32 = -5
-    q1dy float32 = -5
-    q2dx float32 = 5
-    q2dy float32 = 5
-    q3dx float32 = 15
-    q3dy float32 = -5
-    q4dx float32 = 5
-    q4dy float32 = 15
+    q0dx float32 = 10
+    q0dy float32 = -14
+    q1dx float32 = -2
+    q1dy float32 = -8
+    q2dx float32 = 2
+    q2dy float32 = 8
+    q3dx float32 = 20
+    q3dy float32 = 5
+    q4dx float32 = 15
+    q4dy float32 = 20
 
     frstDot int = 9
-    dotx, doty float32 = 2, 4
+    dotx, doty float32 = 6, 9
 
     pointerDown bool
     slctdC int = -1
     lstPnt mgl32.Vec2
-    slctRd float32 = 5
+    slctRd float32 = 6
 )
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 
 
     pn.SetZoom(4.0, 4.0)
-    pn.SetPan(80.0, 80.0)
+    pn.SetPan(100.0, 100.0)
 
     ms := makeMeshes()
     pn.Draw(ms...)
@@ -102,7 +103,7 @@ func moveC(v mgl32.Vec2) {
     switch slctdC {
 
     case 0:
-        c0x, c0y = lstPnt.Elem()
+        c0dy += d[1]
 
     case 1:
         c1dy += d[1]
@@ -125,33 +126,62 @@ func makeMeshes() (ms []mesh.Mesh) {
     resolveValues() // generate initial vectors to make meshes
 
     chst := makeChest()
-    //rwng := makeRWing()
-    //lwng := makeLWing()
-
     ms = append(ms, chst)
+    rwng := makeRWing()
+    ms = append(ms, rwng)
+    lwng := makeLWing()
+    ms = append(ms, lwng)
+
 
     // add dots at control points
-    clr := mgl32.Vec4{1.0, 0.0, 1.0, 0.7}
+    mgnt := mgl32.Vec4{1.0, 0.0, 1.0, 0.7} // magentaish
+    grn := mgl32.Vec4{0.0, 1.0, 0.0, 0.7} // greenish
     for i, v := range c {
-        d := makeDot(v, i + frstDot, clr)
-        ms = append(ms, d)
+        switch i {
+
+        case 0, 1, 2:
+            d := makeDot(v, 1.57, i + frstDot, mgnt)
+            ms = append(ms, d)
+
+        case 4:
+            d := makeDot(v, 0, i + frstDot, mgnt)
+            ms = append(ms, d)
+
+        case 5:
+            d := makeDot(v, -0.79, i + frstDot, mgnt)
+            ms = append(ms, d)
+
+        case 7:
+            d := makeDot(v, 0, i + frstDot, grn)
+            ms = append(ms, d)
+
+        case 8:
+            d := makeDot(v, 0.79, i + frstDot, grn)
+            ms = append(ms, d)
+        }
     }
+
+    // draw q control points
+    // for i, v := range q {
+    //     d := makeDot(v, 0, i + frstDot + 10, mgl32.Vec4{1.0, 1.0, 1.0, 0.7})
+    //     ms = append(ms, d)
+    // }
 
     return ms
 }
 
-func makeDot(v mgl32.Vec2, i int, clr mgl32.Vec4) mesh.Mesh {
-    return mesh.Mesh{
+func makeDot(v mgl32.Vec2, a float32, i int, clr mgl32.Vec4) mesh.Mesh {
+    m := mesh.Mesh{
         Nmbr: mesh.Number(i),
         Dpth: 0.5,
         Vrts: []mgl32.Vec2{
-                {v[0] - dotx, v[1]}, // 0
-                {v[0], v[1] - doty}, // 1
-                {v[0] + dotx, v[1]}, // 2
-                {v[0], v[1] + doty}, // 3
+                {-dotx, 0}, // 0
+                {0, -doty}, // 1
+                {dotx, 0}, // 2
+                {0, doty}, // 3
             },
         Clrs: []mgl32.Vec4{
-            clr, // magentaish
+            clr, 
             },
         Trngls: []mesh.Triangle{
                 {
@@ -164,6 +194,9 @@ func makeDot(v mgl32.Vec2, i int, clr mgl32.Vec4) mesh.Mesh {
                 },
             },
         }
+    m.Transform(mgl32.HomogRotate2D(a)) // rotate by a
+    m.Transform(mgl32.Translate2D(v.Elem())) // translate by v
+    return m
 }
 
 func makeChest() mesh.Mesh {
@@ -234,27 +267,129 @@ func makeChest() mesh.Mesh {
         }
 }
 
+func makeRWing() mesh.Mesh {
+    return mesh.Mesh{
+        Nmbr: 2,
+        Dpth: 1.1,
+        Vrts: []mgl32.Vec2{
+                c[0], //  0
+                q[2], //  1
+                c[3], //  2
+                q[1], //  3
+                c[4], //  4
+                q[3], //  5
+                c[5], //  6
+                q[4], //  7
+                c[2], //  8
+            },
+        Clrs: []mgl32.Vec4{
+                {0.0, 0.0, 1.0, 1.0}, // blue
+            },
+        Trngls: []mesh.Triangle{
+                { 
+                    Vnd: mesh.Nd{2, 1, 0}, // c3, q2, c0
+                    Flvr: mesh.CONCAVE, 
+                },
+                { 
+                    Vnd: mesh.Nd{2, 3, 4}, // c3, q1, c4
+                    Flvr: mesh.CONVEX, 
+                },
+                { 
+                    Vnd: mesh.Nd{4, 5, 6}, // c4, q3, c5
+                    Flvr: mesh.CONVEX,
+                },
+                { 
+                    Vnd: mesh.Nd{6, 7, 8}, // c5, q4, c2
+                    Flvr: mesh.CONVEX,
+                },
+                { 
+                    Vnd: mesh.Nd{8, 0, 1}, // c2, c0, q2
+                },
+                { 
+                    Vnd: mesh.Nd{8, 1, 6}, // c2, q2, c5
+                },
+                { 
+                    Vnd: mesh.Nd{6, 1, 4}, // c5, q2, c4
+                },
+                { 
+                    Vnd: mesh.Nd{1, 2, 4}, // q2, c3, c4
+                },
+            },
+        }
+}
+
+func makeLWing() mesh.Mesh {
+    return mesh.Mesh{
+        Nmbr: 3,
+        Dpth: 1.2,
+        Vrts: []mgl32.Vec2{
+                c[0], //  0
+                q[7], //  1
+                c[6], //  2
+                q[6], //  3
+                c[7], //  4
+                q[8], //  5
+                c[8], //  6
+                q[9], //  7
+                c[2], //  8
+            },
+        Clrs: []mgl32.Vec4{
+                {1.0, 0.0, 0.0, 1.0}, // red
+            },
+        Trngls: []mesh.Triangle{
+                { 
+                    Vnd: mesh.Nd{2, 1, 0}, // c3, q2, c0
+                    Flvr: mesh.CONCAVE, 
+                },
+                { 
+                    Vnd: mesh.Nd{2, 3, 4}, // c3, q1, c4
+                    Flvr: mesh.CONVEX, 
+                },
+                { 
+                    Vnd: mesh.Nd{4, 5, 6}, // c4, q3, c5
+                    Flvr: mesh.CONVEX,
+                },
+                { 
+                    Vnd: mesh.Nd{6, 7, 8}, // c5, q4, c2
+                    Flvr: mesh.CONVEX,
+                },
+                { 
+                    Vnd: mesh.Nd{8, 0, 1}, // c2, c0, q2
+                },
+                { 
+                    Vnd: mesh.Nd{8, 1, 6}, // c2, q2, c5
+                },
+                { 
+                    Vnd: mesh.Nd{6, 1, 4}, // c5, q2, c4
+                },
+                { 
+                    Vnd: mesh.Nd{1, 2, 4}, // q2, c3, c4
+                },
+            },
+        }
+}
+
 func resolveValues() {
     c[0][0] = c0x
-    c[0][1] = c0y
+    c[0][1] = c0y + c0dy
 
-    c[1][0] = c[0][0]
-    c[1][1] = c[0][1] + c1dy
+    c[1][0] = c0x
+    c[1][1] = c0y + c1dy
 
-    c[2][0] = c[0][0]
-    c[2][1] = c[0][1] + c2dy
+    c[2][0] = c0x
+    c[2][1] = c0y + c2dy
 
-    c[4][0] = c[0][0] + c4dx
-    c[7][0] = c[0][0] - c4dx
-    c[4][1] = c[0][1] + (c1dy / 2.0)
+    c[4][0] = c0x + c4dx
+    c[7][0] = c0x - c4dx
+    c[4][1] = c0y + (c1dy / 2.0)
     c[7][1] = c[4][1]
 
     c[3][0], c[3][1] = tween(c[0], c[4])
     c[6][0], c[6][1] = tween(c[0], c[7])
 
-    c[5][0] = c[0][0] + c5dx
-    c[8][0] = c[0][0] - c5dx
-    c[5][1] = c[0][1] + c5dy
+    c[5][0] = c0x + c5dx
+    c[8][0] = c0x - c5dx
+    c[5][1] = c0y + c5dy
     c[8][1] = c[5][1]
 
     q[0][0], q[0][1] = tweenQ(c[1], c[4], mgl32.Vec2{q0dx, q0dy})

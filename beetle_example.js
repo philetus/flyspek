@@ -2950,13 +2950,18 @@ $packages["io"] = (function() {
 	return $pkg;
 })();
 $packages["math"] = (function() {
-	var $pkg = {}, $init, js, arrayType, arrayType$1, arrayType$2, structType, arrayType$3, math, zero, posInf, negInf, nan, buf, pow10tab, Hypot, Inf, IsInf, IsNaN, NaN, Sqrt, init, Float32bits, Float64bits, hypot, init$1;
+	var $pkg = {}, $init, js, arrayType, arrayType$1, arrayType$2, structType, arrayType$3, math, zero, posInf, negInf, nan, buf, pow10tab, Cos, Hypot, Inf, IsInf, IsNaN, NaN, Sin, Sqrt, init, Float32bits, Float64bits, hypot, init$1;
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	arrayType = $arrayType($Uint32, 2);
 	arrayType$1 = $arrayType($Float32, 2);
 	arrayType$2 = $arrayType($Float64, 1);
 	structType = $structType([{prop: "uint32array", name: "uint32array", pkg: "math", typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", pkg: "math", typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", pkg: "math", typ: arrayType$2, tag: ""}]);
 	arrayType$3 = $arrayType($Float64, 70);
+	Cos = function(x) {
+		var $ptr, x;
+		return $parseFloat(math.cos(x));
+	};
+	$pkg.Cos = Cos;
 	Hypot = function(p, q) {
 		var $ptr, p, q;
 		return hypot(p, q);
@@ -2994,6 +2999,11 @@ $packages["math"] = (function() {
 		return nan;
 	};
 	$pkg.NaN = NaN;
+	Sin = function(x) {
+		var $ptr, x;
+		return $parseFloat(math.sin(x));
+	};
+	$pkg.Sin = Sin;
 	Sqrt = function(x) {
 		var $ptr, x;
 		return $parseFloat(math.sqrt(x));
@@ -17420,7 +17430,7 @@ $packages["text/tabwriter"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/go-gl/mathgl/mgl32"] = (function() {
-	var $pkg = {}, $init, bytes, errors, fmt, f32, math, sync, tabwriter, Mat2, Mat2x3, Mat2x4, Mat3x2, Mat3, Mat3x4, Mat4x2, Mat4x3, Mat4, Vec2, Vec3, Vec4, arrayType, arrayType$1, sliceType$2, arrayType$2, arrayType$3, sliceType$3, arrayType$4, arrayType$5, arrayType$6, funcType, ptrType$3, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, Mat2FromCols, Mat3FromCols, Mat4FromCols, Translate2D, Scale2D, Abs, FloatEqual, FloatEqualThreshold;
+	var $pkg = {}, $init, bytes, errors, fmt, f32, math, sync, tabwriter, Mat2, Mat2x3, Mat2x4, Mat3x2, Mat3, Mat3x4, Mat4x2, Mat4x3, Mat4, Vec2, Vec3, Vec4, arrayType, arrayType$1, sliceType$2, arrayType$2, arrayType$3, sliceType$3, arrayType$4, arrayType$5, arrayType$6, funcType, ptrType$3, ptrType$4, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, ptrType$11, Mat2FromCols, Mat3FromCols, Mat4FromCols, Translate2D, HomogRotate2D, Scale2D, Abs, FloatEqual, FloatEqualThreshold;
 	bytes = $packages["bytes"];
 	errors = $packages["errors"];
 	fmt = $packages["fmt"];
@@ -19683,6 +19693,15 @@ $packages["github.com/go-gl/mathgl/mgl32"] = (function() {
 		return $toNativeArray($kindFloat32, [1, 0, 0, 0, 1, 0, Tx, Ty, 1]);
 	};
 	$pkg.Translate2D = Translate2D;
+	HomogRotate2D = function(angle) {
+		var $ptr, _tmp, _tmp$1, angle, cos, sin;
+		_tmp = $fround(math.Sin(angle));
+		_tmp$1 = $fround(math.Cos(angle));
+		sin = _tmp;
+		cos = _tmp$1;
+		return $toNativeArray($kindFloat32, [cos, sin, 0, -sin, cos, 0, 0, 0, 1]);
+	};
+	$pkg.HomogRotate2D = HomogRotate2D;
 	Scale2D = function(scaleX, scaleY) {
 		var $ptr, scaleX, scaleY;
 		return $toNativeArray($kindFloat32, [scaleX, 0, 0, 0, scaleY, 0, 0, 0, 1]);
@@ -20346,7 +20365,24 @@ $packages["github.com/philetus/flyspek/mesh"] = (function() {
 		return f;
 	};
 	Triangle.prototype.Colors = function(m) { return this.$val.Colors(m); };
+	Mesh.ptr.prototype.Transform = function(mtx) {
+		var $ptr, _i, _ref, i, mtx, self, v, v3, x;
+		mtx = $clone(mtx, mgl32.Mat3);
+		self = $clone(this, Mesh);
+		_ref = self.Vrts;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			i = _i;
+			v = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mgl32.Vec2);
+			v3 = $clone(new mgl32.Mat3(mtx).Mul3x1(new mgl32.Vec2(v).Vec3(1)), mgl32.Vec3);
+			mgl32.Vec2.copy((x = self.Vrts, ((i < 0 || i >= x.$length) ? $throwRuntimeError("index out of range") : x.$array[x.$offset + i])), new mgl32.Vec3(v3).Vec2());
+			_i++;
+		}
+	};
+	Mesh.prototype.Transform = function(mtx) { return this.$val.Transform(mtx); };
 	Triangle.methods = [{prop: "Vertices", name: "Vertices", pkg: "", typ: $funcType([Mesh], [sliceType], false)}, {prop: "Colors", name: "Colors", pkg: "", typ: $funcType([Mesh], [sliceType], false)}];
+	Mesh.methods = [{prop: "Transform", name: "Transform", pkg: "", typ: $funcType([mgl32.Mat3], [], false)}];
 	Nd.init($Int, 3);
 	Triangle.init([{prop: "Vnd", name: "Vnd", pkg: "", typ: Nd, tag: ""}, {prop: "Flvr", name: "Flvr", pkg: "", typ: Flavor, tag: ""}, {prop: "Cnd", name: "Cnd", pkg: "", typ: Nd, tag: ""}]);
 	Mesh.init([{prop: "Nmbr", name: "Nmbr", pkg: "", typ: Number, tag: ""}, {prop: "Dpth", name: "Dpth", pkg: "", typ: $Float32, tag: ""}, {prop: "Vrts", name: "Vrts", pkg: "", typ: sliceType$1, tag: ""}, {prop: "Clrs", name: "Clrs", pkg: "", typ: sliceType$2, tag: ""}, {prop: "Trngls", name: "Trngls", pkg: "", typ: sliceType$3, tag: ""}]);
@@ -22492,7 +22528,7 @@ $packages["github.com/philetus/flyspek/pane"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, fmt, mgl32, mesh, pane, arrayType, sliceType, sliceType$1, sliceType$2, sliceType$3, sliceType$4, arrayType$1, arrayType$2, c, q, c0x, c0y, c1dy, c2dy, c4dx, c5dx, c5dy, q0dx, q0dy, q1dx, q1dy, q2dx, q2dy, q3dx, q3dy, q4dx, q4dy, frstDot, dotx, doty, pointerDown, slctdC, lstPnt, slctRd, main, pointAt, moveC, makeMeshes, makeDot, makeChest, resolveValues, tween, tweenQ;
+	var $pkg = {}, $init, fmt, mgl32, mesh, pane, arrayType, sliceType, sliceType$1, sliceType$2, sliceType$3, sliceType$4, arrayType$1, arrayType$2, c, q, c0x, c0y, c0dy, c1dy, c2dy, c4dx, c5dx, c5dy, q0dx, q0dy, q1dx, q1dy, q2dx, q2dy, q3dx, q3dy, q4dx, q4dy, frstDot, dotx, doty, pointerDown, slctdC, lstPnt, slctRd, main, pointAt, moveC, makeMeshes, makeDot, makeChest, makeRWing, makeLWing, resolveValues, tween, tweenQ;
 	fmt = $packages["fmt"];
 	mgl32 = $packages["github.com/go-gl/mathgl/mgl32"];
 	mesh = $packages["github.com/philetus/flyspek/mesh"];
@@ -22511,7 +22547,7 @@ $packages["main"] = (function() {
 		_r = pane.New(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		pn = _r;
 		$r = pn.SetZoom(4, 4); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = pn.SetPan(80, 80); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = pn.SetPan(100, 100); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		ms = makeMeshes();
 		$r = pn.Draw(ms); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* while (true) { */ case 5:
@@ -22576,15 +22612,13 @@ $packages["main"] = (function() {
 		return false;
 	};
 	moveC = function(v) {
-		var $ptr, _2, _tuple, d, v;
+		var $ptr, _2, d, v;
 		v = $clone(v, mgl32.Vec2);
 		d = $clone(new mgl32.Vec2(v).Sub(lstPnt), mgl32.Vec2);
 		mgl32.Vec2.copy(lstPnt, v);
 		_2 = slctdC;
 		if (_2 === (0)) {
-			_tuple = new mgl32.Vec2(lstPnt).Elem();
-			c0x = _tuple[0];
-			c0y = _tuple[1];
+			c0dy = $fround(c0dy + (d[1]));
 		} else if (_2 === (1)) {
 			c1dy = $fround(c1dy + (d[1]));
 		} else if (_2 === (2)) {
@@ -22597,46 +22631,78 @@ $packages["main"] = (function() {
 		}
 	};
 	makeMeshes = function() {
-		var $ptr, _i, _ref, chst, clr, d, i, ms, v;
+		var $ptr, _3, _i, _ref, chst, d, d$1, d$2, d$3, d$4, grn, i, lwng, mgnt, ms, rwng, v;
 		ms = sliceType$2.nil;
 		resolveValues();
 		chst = $clone(makeChest(), mesh.Mesh);
 		ms = $append(ms, chst);
-		clr = $toNativeArray($kindFloat32, [1, 0, 1, 0.699999988079071]);
+		rwng = $clone(makeRWing(), mesh.Mesh);
+		ms = $append(ms, rwng);
+		lwng = $clone(makeLWing(), mesh.Mesh);
+		ms = $append(ms, lwng);
+		mgnt = $toNativeArray($kindFloat32, [1, 0, 1, 0.699999988079071]);
+		grn = $toNativeArray($kindFloat32, [0, 1, 0, 0.699999988079071]);
 		_ref = c;
 		_i = 0;
 		while (true) {
 			if (!(_i < _ref.$length)) { break; }
 			i = _i;
 			v = $clone(((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]), mgl32.Vec2);
-			d = $clone(makeDot(v, i + frstDot >> 0, clr), mesh.Mesh);
-			ms = $append(ms, d);
+			_3 = i;
+			if ((_3 === (0)) || (_3 === (1)) || (_3 === (2))) {
+				d = $clone(makeDot(v, 1.5700000524520874, i + frstDot >> 0, mgnt), mesh.Mesh);
+				ms = $append(ms, d);
+			} else if (_3 === (4)) {
+				d$1 = $clone(makeDot(v, 0, i + frstDot >> 0, mgnt), mesh.Mesh);
+				ms = $append(ms, d$1);
+			} else if (_3 === (5)) {
+				d$2 = $clone(makeDot(v, -0.7900000214576721, i + frstDot >> 0, mgnt), mesh.Mesh);
+				ms = $append(ms, d$2);
+			} else if (_3 === (7)) {
+				d$3 = $clone(makeDot(v, 0, i + frstDot >> 0, grn), mesh.Mesh);
+				ms = $append(ms, d$3);
+			} else if (_3 === (8)) {
+				d$4 = $clone(makeDot(v, 0.7900000214576721, i + frstDot >> 0, grn), mesh.Mesh);
+				ms = $append(ms, d$4);
+			}
 			_i++;
 		}
 		ms = ms;
 		return ms;
 	};
-	makeDot = function(v, i, clr) {
-		var $ptr, clr, i, v;
+	makeDot = function(v, a, i, clr) {
+		var $ptr, _tuple, a, clr, i, m, v;
 		clr = $clone(clr, mgl32.Vec4);
 		v = $clone(v, mgl32.Vec2);
-		return new mesh.Mesh.ptr((i >> 0), 0.5, new sliceType([$toNativeArray($kindFloat32, [$fround(v[0] - dotx), v[1]]), $toNativeArray($kindFloat32, [v[0], $fround(v[1] - doty)]), $toNativeArray($kindFloat32, [$fround(v[0] + dotx), v[1]]), $toNativeArray($kindFloat32, [v[0], $fround(v[1] + doty)])]), new sliceType$3([$clone(clr, mgl32.Vec4)]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 3, 0]), 1, arrayType$2.zero())]));
+		m = new mesh.Mesh.ptr((i >> 0), 0.5, new sliceType([$toNativeArray($kindFloat32, [-dotx, 0]), $toNativeArray($kindFloat32, [0, -doty]), $toNativeArray($kindFloat32, [dotx, 0]), $toNativeArray($kindFloat32, [0, doty])]), new sliceType$3([$clone(clr, mgl32.Vec4)]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 3, 0]), 1, arrayType$2.zero())]));
+		m.Transform(mgl32.HomogRotate2D(a));
+		_tuple = new mgl32.Vec2(v).Elem();
+		m.Transform(mgl32.Translate2D(_tuple[0], _tuple[1]));
+		return m;
 	};
 	makeChest = function() {
 		var $ptr;
 		return new mesh.Mesh.ptr(1, 1, new sliceType([$clone((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), mgl32.Vec2), $clone((7 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 7]), mgl32.Vec2), $clone((6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), mgl32.Vec2), $clone((6 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 6]), mgl32.Vec2), $clone((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), mgl32.Vec2), $clone((5 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 5]), mgl32.Vec2), $clone((1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), mgl32.Vec2), $clone((0 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 0]), mgl32.Vec2), $clone((4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), mgl32.Vec2), $clone((1 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 1]), mgl32.Vec2), $clone((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), mgl32.Vec2), $clone((2 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 2]), mgl32.Vec2)]), new sliceType$3([$toNativeArray($kindFloat32, [1, 1, 0, 1])]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 1, 2]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [10, 11, 0]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 3, 2]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [10, 9, 8]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 5, 6]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [6, 7, 8]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 2, 3]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 9, 10]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 3, 6]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [0, 6, 9]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 6, 3]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 9, 6]), 0, arrayType$2.zero())]));
 	};
+	makeRWing = function() {
+		var $ptr;
+		return new mesh.Mesh.ptr(2, 1.100000023841858, new sliceType([$clone((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), mgl32.Vec2), $clone((2 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 2]), mgl32.Vec2), $clone((3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3]), mgl32.Vec2), $clone((1 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 1]), mgl32.Vec2), $clone((4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), mgl32.Vec2), $clone((3 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 3]), mgl32.Vec2), $clone((5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5]), mgl32.Vec2), $clone((4 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 4]), mgl32.Vec2), $clone((2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2]), mgl32.Vec2)]), new sliceType$3([$toNativeArray($kindFloat32, [0, 0, 1, 1])]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 1, 0]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 3, 4]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 5, 6]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [6, 7, 8]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 0, 1]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 1, 6]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [6, 1, 4]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [1, 2, 4]), 0, arrayType$2.zero())]));
+	};
+	makeLWing = function() {
+		var $ptr;
+		return new mesh.Mesh.ptr(3, 1.2000000476837158, new sliceType([$clone((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), mgl32.Vec2), $clone((7 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 7]), mgl32.Vec2), $clone((6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6]), mgl32.Vec2), $clone((6 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 6]), mgl32.Vec2), $clone((7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]), mgl32.Vec2), $clone((8 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 8]), mgl32.Vec2), $clone((8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8]), mgl32.Vec2), $clone((9 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 9]), mgl32.Vec2), $clone((2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2]), mgl32.Vec2)]), new sliceType$3([$toNativeArray($kindFloat32, [1, 0, 0, 1])]), new sliceType$4([new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 1, 0]), 2, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [2, 3, 4]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [4, 5, 6]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [6, 7, 8]), 1, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 0, 1]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [8, 1, 6]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [6, 1, 4]), 0, arrayType$2.zero()), new mesh.Triangle.ptr($toNativeArray($kindInt, [1, 2, 4]), 0, arrayType$2.zero())]));
+	};
 	resolveValues = function() {
 		var $ptr, _tuple, _tuple$1, _tuple$10, _tuple$11, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, _tuple$9;
 		(0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] = c0x;
-		(0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] = c0y;
-		(1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1])[0] = (0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0];
-		(1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1])[1] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] + c1dy);
-		(2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2])[0] = (0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0];
-		(2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2])[1] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] + c2dy);
-		(4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] + c4dx);
-		(7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] - c4dx);
-		(4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[1] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] + ($fround(c1dy / 2)));
+		(0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] = $fround(c0y + c0dy);
+		(1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1])[0] = c0x;
+		(1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1])[1] = $fround(c0y + c1dy);
+		(2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2])[0] = c0x;
+		(2 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 2])[1] = $fround(c0y + c2dy);
+		(4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[0] = $fround(c0x + c4dx);
+		(7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7])[0] = $fround(c0x - c4dx);
+		(4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[1] = $fround(c0y + ($fround(c1dy / 2)));
 		(7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7])[1] = (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4])[1];
 		_tuple = tween((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]));
 		(3 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 3])[0] = _tuple[0];
@@ -22644,9 +22710,9 @@ $packages["main"] = (function() {
 		_tuple$1 = tween((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0]), (7 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 7]));
 		(6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6])[0] = _tuple$1[0];
 		(6 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 6])[1] = _tuple$1[1];
-		(5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] + c5dx);
-		(8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8])[0] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[0] - c5dx);
-		(5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[1] = $fround((0 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 0])[1] + c5dy);
+		(5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[0] = $fround(c0x + c5dx);
+		(8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8])[0] = $fround(c0x - c5dx);
+		(5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[1] = $fround(c0y + c5dy);
 		(8 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 8])[1] = (5 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 5])[1];
 		_tuple$2 = tweenQ((1 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 1]), (4 >= c.$length ? $throwRuntimeError("index out of range") : c.$array[c.$offset + 4]), $toNativeArray($kindFloat32, [q0dx, q0dy]));
 		(0 >= q.$length ? $throwRuntimeError("index out of range") : q.$array[q.$offset + 0])[0] = _tuple$2[0];
@@ -22722,26 +22788,27 @@ $packages["main"] = (function() {
 		q = $makeSlice(sliceType, 10);
 		c0x = 0;
 		c0y = 0;
+		c0dy = 0;
 		c1dy = -50;
-		c2dy = 80;
+		c2dy = 95;
 		c4dx = 40;
 		c5dx = 50;
 		c5dy = 70;
-		q0dx = 5;
-		q0dy = -20;
-		q1dx = -5;
-		q1dy = -5;
-		q2dx = 5;
-		q2dy = 5;
-		q3dx = 15;
-		q3dy = -5;
-		q4dx = 5;
-		q4dy = 15;
+		q0dx = 10;
+		q0dy = -14;
+		q1dx = -2;
+		q1dy = -8;
+		q2dx = 2;
+		q2dy = 8;
+		q3dx = 20;
+		q3dy = 5;
+		q4dx = 15;
+		q4dy = 20;
 		frstDot = 9;
-		dotx = 2;
-		doty = 4;
+		dotx = 6;
+		doty = 9;
 		slctdC = -1;
-		slctRd = 5;
+		slctRd = 6;
 		/* */ if ($pkg === $mainPkg) { $s = 5; continue; }
 		/* */ $s = 6; continue;
 		/* if ($pkg === $mainPkg) { */ case 5:

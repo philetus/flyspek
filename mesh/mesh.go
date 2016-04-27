@@ -47,3 +47,11 @@ func (self Triangle) Colors(m Mesh) []float32 {
     }
     return f
 }
+
+// transform vertices of mesh by given matrix
+func (self Mesh) Transform(mtx mgl32.Mat3) {
+    for i, v := range self.Vrts {
+        v3 := mtx.Mul3x1(v.Vec3(1)) // add 1 for homogenous transform
+        self.Vrts[i] = v3.Vec2() // drop z & assign to vrts slot
+    }
+}
